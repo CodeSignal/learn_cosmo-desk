@@ -3,6 +3,7 @@ import { useId } from 'react';
 import { FIELD_KEYS, NOT_ESCALATED, noneLabel } from '../../shared/config.js';
 import { TEXT_LIMITS, emptyEntry, isTriaged, mergedInto } from '../../shared/work.js';
 import { missingParts } from '../lib/status.js';
+import { DuplicatePicker } from './DuplicatePicker.jsx';
 import { Icon, channelIcon } from './Icon.jsx';
 
 function initials(name) {
@@ -37,7 +38,6 @@ function PillGroup({ label, value, options, onChange }) {
 }
 
 function DuplicateField({ item, cases, work, value, onChange }) {
-  const id = useId();
   const children = mergedInto(work, item.id);
   if (children.length > 0) {
     return (
@@ -49,27 +49,7 @@ function DuplicateField({ item, cases, work, value, onChange }) {
     );
   }
   const targets = cases.filter((other) => other.id !== item.id && !work.cases[other.id]?.duplicateOf);
-  return (
-    <div className="cd-duplicate">
-      <label htmlFor={id} className="cd-field-label body-xsmall">
-        <Icon name="merge" />
-        Duplicate of
-      </label>
-      <select
-        id={id}
-        className="input cd-select"
-        value={value ?? ''}
-        onChange={(event) => onChange(event.target.value || null)}
-      >
-        <option value="">Not a duplicate</option>
-        {targets.map((other) => (
-          <option key={other.id} value={other.id}>
-            {other.id} · {other.subject}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
+  return <DuplicatePicker targets={targets} value={value} onChange={onChange} />;
 }
 
 export function CaseDetail({
@@ -201,7 +181,7 @@ export function CaseDetail({
 
           {merged ? (
             <p className="cd-merge-note body-xsmall">
-              A merged case keeps no routing of its own. Choose “Not a duplicate” to route it
+              A merged case keeps no routing of its own. Clear “Duplicate of” with × to route it
               separately.
             </p>
           ) : (

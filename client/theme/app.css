@@ -26,7 +26,9 @@ body,
   margin: 0;
 }
 
+/* The app fills the preview; only its panes scroll, never the page. */
 body {
+  overflow: hidden;
   background: var(--Colors-Surface-App-Base);
   color: var(--Colors-Text-Body-Default);
   font-family: var(--body-family), system-ui, sans-serif;
@@ -372,6 +374,7 @@ button {
 }
 
 .cd-row {
+  position: relative;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: var(--UI-Spacing-spacing-s);
@@ -641,10 +644,101 @@ button {
   border-bottom: 1px solid var(--Colors-Border-Subtle);
 }
 
-.cd-select {
+.cd-combo {
+  position: relative;
+  min-width: 0;
+}
+
+.cd-combo-icon {
+  position: absolute;
+  top: 50%;
+  left: var(--UI-Spacing-spacing-mxs);
+  color: var(--Colors-Icon-Default);
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.cd-combo-input {
   width: 100%;
   height: var(--UI-Input-xs);
+  padding-left: calc(var(--UI-Spacing-spacing-mxs) + var(--UI-Spacing-spacing-ml));
+  padding-right: var(--UI-Spacing-spacing-xl);
+  text-overflow: ellipsis;
+}
+
+.cd-combo-clear {
+  position: absolute;
+  top: 50%;
+  right: var(--UI-Spacing-spacing-xxs);
+  width: var(--UI-Input-min);
+  height: var(--UI-Input-min);
+  transform: translateY(-50%);
+}
+
+.cd-combo-list {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + var(--UI-Spacing-spacing-xxs));
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  margin: 0;
+  padding: var(--UI-Spacing-spacing-xxs);
+  overflow-y: auto;
+  background: var(--Colors-Surface-Container-Base);
+  border: 1px solid var(--Colors-Border-Medium);
+  border-radius: var(--UI-Radius-radius-s);
+  box-shadow: 0 8px 24px var(--Colors-Border-Soft);
+  list-style: none;
+}
+
+.cd-combo-option {
+  position: relative;
+  display: grid;
+  gap: var(--UI-Spacing-spacing-min);
+  padding: var(--UI-Spacing-spacing-xs) var(--UI-Spacing-spacing-xl) var(--UI-Spacing-spacing-xs)
+    var(--UI-Spacing-spacing-s);
+  border-radius: var(--UI-Radius-radius-xs);
   cursor: pointer;
+}
+
+.cd-combo-option-active {
+  background: var(--Colors-Surface-App-Tinted-Low);
+}
+
+.cd-combo-option-top {
+  display: flex;
+  gap: var(--UI-Spacing-spacing-s);
+  color: var(--Colors-Text-Body-Medium);
+}
+
+.cd-combo-option-top strong {
+  color: var(--Colors-Text-Body-Strong);
+}
+
+.cd-combo-time {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.cd-combo-subject {
+  overflow: hidden;
+  color: var(--Colors-Text-Body-Strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cd-combo-check {
+  position: absolute;
+  top: 50%;
+  right: var(--UI-Spacing-spacing-s);
+  color: var(--Colors-Text-Body-Primary);
+  transform: translateY(-50%);
+}
+
+.cd-combo-empty {
+  padding: var(--UI-Spacing-spacing-s);
+  color: var(--Colors-Text-Body-Medium);
 }
 
 .cd-merge-note {

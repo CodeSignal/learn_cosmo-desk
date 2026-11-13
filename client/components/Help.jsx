@@ -43,8 +43,9 @@ export function Help({ open, onClose, desk, fields, onStartOver }) {
               escalated case needs a one-line reason.
             </li>
             <li>
-              If the case repeats one already in the queue, set “Duplicate of” to the earliest case. A
-              merged case needs nothing else.
+              If the case repeats one already in the queue, search for the earliest case in “Duplicate
+              of” (by number, subject, name or words from the message). A merged case needs nothing
+              else.
             </li>
             <li>Cases marked “Reply needed” also need a written reply to the requester.</li>
           </ol>

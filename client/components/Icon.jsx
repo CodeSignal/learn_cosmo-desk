@@ -74,6 +74,12 @@ const PATHS = {
   'chevron-left': <path d="M10 3.5 5.5 8l4.5 4.5" />,
   'chevron-right': <path d="m6 3.5 4.5 4.5L6 12.5" />,
   close: <path d="M4 4l8 8M12 4l-8 8" />,
+  search: (
+    <>
+      <circle cx="7" cy="7" r="4.5" />
+      <path d="m10.4 10.4 3.1 3.1" />
+    </>
+  ),
   sparkle: (
     <path d="M8 2.5 9.2 6.8 13.5 8 9.2 9.2 8 13.5 6.8 9.2 2.5 8 6.8 6.8Z" />
   ),
