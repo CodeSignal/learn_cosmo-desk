@@ -19,7 +19,7 @@ function priorityLabel(fields, entry) {
   return optionLabel(fields, 'priority', entry.priority);
 }
 
-export function QueueList({ cases, fields, work, selectedId, filter, onFilterChange, onSelect, focusRequest }) {
+export function QueueList({ cases, fields, work, selectedId, filter, onFilterChange, onSelect, focusRequest, resizeHandle }) {
   const listRef = useRef(null);
   const rows = cases.map((item) => ({ item, status: caseStatus(work.cases[item.id]) }));
   const counts = {
@@ -51,6 +51,7 @@ export function QueueList({ cases, fields, work, selectedId, filter, onFilterCha
 
   return (
     <nav className="cd-list" aria-label="Case queue">
+      {resizeHandle}
       <div className="cd-list-head">
         <div className="cd-filter" role="group" aria-label="Show">
           {FILTERS.map(([id, label]) => (

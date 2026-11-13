@@ -9,6 +9,7 @@ import { QueueList, isOpenStatus } from './components/QueueList.jsx';
 import { api } from './lib/api.js';
 import { caseStatus } from './lib/status.js';
 import { useMediaQuery } from './lib/useMediaQuery.js';
+import { useResizableWidth } from './lib/useResizableWidth.js';
 import { useWork } from './lib/useWork.js';
 
 export function App() {
@@ -52,6 +53,8 @@ export function App() {
 function Desk({ config, initialWork }) {
   const { work, saveState, updateCase, retry, resetWork } = useWork(initialWork);
   const narrow = useMediaQuery('(max-width: 759px)');
+  const listPanel = useResizableWidth({ storageKey: 'cosmo-desk.list-width', initial: 320, min: 240, max: 560, edge: 'right' });
+  const guidePanel = useResizableWidth({ storageKey: 'cosmo-desk.guide-width', initial: 440, min: 300, max: 820, edge: 'left' });
   const [selectedId, setSelectedId] = useState(config.cases[0].id);
   const [narrowShowsDetail, setNarrowShowsDetail] = useState(false);
   const [filter, setFilter] = useState(() =>
@@ -128,8 +131,10 @@ function Desk({ config, initialWork }) {
         className={`cd-queue${narrowShowsDetail ? ' cd-show-detail' : ''}${
           guideOpen ? ' cd-with-guide' : ''
         }`}
+        style={{ '--cd-list-width': `${listPanel.width}px`, '--cd-guide-width': `${guidePanel.width}px` }}
       >
           <QueueList
+            resizeHandle={<div className="cd-resize-handle cd-resize-right" aria-label="Resize the case queue" {...listPanel.handleProps} />}
             cases={config.cases}
             fields={config.fields}
             work={work}
@@ -161,12 +166,15 @@ function Desk({ config, initialWork }) {
           />
           {guideOpen && (
             <aside className="cd-guide-panel" aria-label={config.guide.title}>
-              <Guide
-                guide={config.guide}
-                compact
-                focus={guideFocus}
-                onClose={() => setGuideOpen(false)}
-              />
+              <div className="cd-resize-handle cd-resize-left" aria-label="Resize the routing guide" {...guidePanel.handleProps} />
+              <div className="cd-guide-scroll">
+                <Guide
+                  guide={config.guide}
+                  compact
+                  focus={guideFocus}
+                  onClose={() => setGuideOpen(false)}
+                />
+              </div>
             </aside>
           )}
       </main>

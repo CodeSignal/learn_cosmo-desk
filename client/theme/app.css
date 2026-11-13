@@ -7,6 +7,8 @@
 :root {
   --cd-icon-on-fill: var(--Colors-Surface-Container-Base);
   --cd-header-height: 56px;
+  /* The case column is the workspace; the sidebars give way before it drops below this. */
+  --cd-detail-min: 480px;
   --cd-success-text: var(--Colors-Alert-Success-Dark);
   --cd-warning-text: var(--Colors-Alert-Warning-Dark);
 }
@@ -284,15 +286,19 @@ button {
 
 .cd-queue {
   display: grid;
-  grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  grid-template-columns: max(240px, min(var(--cd-list-width, 320px), calc(100vw - var(--cd-detail-min)))) minmax(0, 1fr);
   min-height: 0;
 }
 
 .cd-queue.cd-with-guide {
-  grid-template-columns: minmax(270px, 320px) minmax(0, 1fr) minmax(320px, 400px);
+  grid-template-columns:
+    max(240px, min(var(--cd-list-width, 320px), calc(100vw - var(--cd-guide-width, 440px) - var(--cd-detail-min))))
+    minmax(0, 1fr)
+    max(300px, min(var(--cd-guide-width, 440px), calc(100vw - var(--cd-list-width, 320px) - var(--cd-detail-min))));
 }
 
 .cd-list {
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   min-height: 0;
@@ -521,7 +527,6 @@ button {
   align-content: start;
   gap: var(--UI-Spacing-spacing-ms);
   width: 100%;
-  max-width: 860px;
   padding: var(--UI-Spacing-spacing-ml) var(--UI-Spacing-spacing-mxl) var(--UI-Spacing-spacing-xxxl);
   overflow-y: auto;
 }
@@ -616,6 +621,7 @@ button {
 }
 
 .cd-message-body {
+  max-width: 90ch;
   color: var(--Colors-Text-Body-Strong);
   line-height: 1.6;
   white-space: pre-wrap;
@@ -943,13 +949,59 @@ button {
 
 
 .cd-guide-panel {
+  position: relative;
   min-height: 0;
-  overflow-y: auto;
   background: var(--Colors-Surface-Container-Base);
   border-left: 1px solid var(--Colors-Border-Soft);
 }
 
-.cd-guide-panel .cd-guide {
+.cd-guide-scroll {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.cd-resize-handle {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  width: 9px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.cd-resize-right {
+  right: -5px;
+}
+
+.cd-resize-left {
+  left: -5px;
+}
+
+.cd-resize-handle::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 4px;
+  width: 1px;
+  background: transparent;
+  transition: background 0.12s ease;
+}
+
+.cd-resize-handle:hover::after,
+.cd-resize-handle:focus-visible::after,
+.cd-resize-handle:active::after {
+  width: 3px;
+  left: 3px;
+  background: var(--Colors-Primary-Default);
+}
+
+.cd-resize-handle:focus-visible {
+  outline: none;
+}
+
+.cd-guide-scroll .cd-guide {
   padding: 0 var(--UI-Spacing-spacing-ms) var(--UI-Spacing-spacing-xl);
 }
 
@@ -965,7 +1017,7 @@ button {
   gap: var(--UI-Spacing-spacing-s);
 }
 
-.cd-guide-panel .cd-guide-head {
+.cd-guide-scroll .cd-guide-head {
   position: sticky;
   top: 0;
   z-index: 1;
@@ -1219,7 +1271,7 @@ kbd {
 /* Between narrow and wide, an open guide takes the queue's place beside the case. */
 @media (max-width: 1199px) {
   .cd-queue.cd-with-guide {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+    grid-template-columns: minmax(0, 1fr) min(var(--cd-guide-width, 440px), 50%);
   }
 
   .cd-queue.cd-with-guide .cd-list {
@@ -1235,7 +1287,8 @@ kbd {
 
 /* Preview panel beside the instructions: one pane at a time. */
 @media (max-width: 759px) {
-  .cd-btn-label {
+  .cd-btn-label,
+  .cd-resize-handle {
     display: none;
   }
 
