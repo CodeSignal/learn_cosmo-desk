@@ -81,6 +81,7 @@ lib/               file loading and saving, the session report
 scripts/           validate and report entry points
 client/            React app: App, components/, lib/, theme/; design system submodule
 examples/          two complete tasks with strong and weak solutions (test fixtures only)
+.codesignal/       the base task's session scripts (setup.sh, run_solution.sh), mirrored here
 docs/authoring.md  writing a task
 test/              node:test, no browser
 ```
