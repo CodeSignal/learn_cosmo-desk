@@ -16,7 +16,10 @@
     "build": "vite build",
     "test": "node --test \"test/*.test.js\"",
     "validate": "node scripts/validate.js",
-    "report": "node scripts/report.js"
+    "report": "node scripts/report.js",
+    "pack": "node scripts/pack-release.js",
+    "verify:release": "node scripts/verify-release.js release.tar.gz",
+    "release:local": "npm run build && npm run pack && npm run verify:release"
   },
   "keywords": [
     "codesignal",

@@ -49,6 +49,28 @@ npm run report           # prints the report from ./config.json and ./solution.j
 | `npm run validate -- <config.json>...` | checks task configs |
 | `npm run report [-- --dir <dir>]` | prints the session report |
 | `npm run build` | builds the client into `dist/` |
+| `npm run release:local` | builds, packs `release.tar.gz` and boots it as a session would |
+
+## Releases
+
+A session downloads `release.tar.gz` and runs `npm run start:prod` where it unpacks; it never
+installs dependencies. The tarball holds one minified bundle per entry point (`server.js`,
+`scripts/report.js`, `scripts/validate.js`), the built client and the docs, and never a
+`config.json`, `solution.json` or example solution.
+
+Every pull request runs the tests, packs the tarball and boots it. A merge to `main` also
+publishes a pre-release `vN` and moves the floating `prerelease` release to it:
+
+| Channel | URL |
+|---|---|
+| Staging | `https://github.com/CodeSignal/learn_cosmo-desk/releases/download/prerelease/release.tar.gz` |
+| Production | `https://github.com/CodeSignal/learn_cosmo-desk/releases/latest/download/release.tar.gz` |
+
+Promote a build to production once it has passed a staging test:
+
+```bash
+gh release edit vN -R CodeSignal/learn_cosmo-desk --prerelease=false --latest
+```
 
 ## Layout
 

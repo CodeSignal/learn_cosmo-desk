@@ -1,11 +1,20 @@
 name: Build and Release
 
+# Pull requests run every gate; a merge to main also publishes a pre-release and moves the
+# floating `prerelease` tag that staging downloads. Production gets a build only when someone
+# promotes it to latest.
 on:
+  pull_request:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
   contents: write
+
+# Queued, not cancelled, so two merges cannot interleave their updates of the `prerelease` tag.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name == 'push' && 'release' || github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build-and-release:
@@ -17,43 +26,83 @@ jobs:
 
       - name: Populate design system submodule
         run: git submodule update --init
-        
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '22.13.1'
           cache: 'npm'
 
-      - name: Install all dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Build project
+      - name: Build the client
         run: npm run build
 
-      - name: Install production dependencies only
-        run: |
-          npm ci --production
+      - name: Run tests
+        run: npm test
 
-      - name: Create release tarball
-        run: |
-          tar -czf release.tar.gz dist/ package.json server.js node_modules/
+      - name: Validate the example tasks
+        run: npm run validate -- examples/*/config.json
 
-      - name: Upload build artifact (for workflow logs)
+      - name: Pack the release
+        run: npm run pack
+
+      - name: Verify the tarball boots and reports like a session
+        run: node scripts/verify-release.js release.tar.gz --require-session-port
+
+      - name: Upload the tarball to the workflow run
         uses: actions/upload-artifact@v4
         with:
-          name: dist
-          path: dist
+          name: release
+          path: release.tar.gz
 
-      - name: Create GitHub Release and upload asset
+      - name: Create the pre-release
+        if: github.event_name == 'push'
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${{ github.run_number }}
           name: Release ${{ github.run_number }}
           body: |
-            Latest build from main branch.
+            Build from main (${{ github.sha }}). Staging gets it through the floating `prerelease` tag.
+            Promote it to production by marking it as the latest release.
           artifacts: release.tar.gz
+          artifactErrorsFailBuild: true
           allowUpdates: false
           draft: false
-          prerelease: false
-          makeLatest: true
+          prerelease: true
+          makeLatest: false
+
+      - name: Move the floating prerelease tag
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SOURCE_TAG: v${{ github.run_number }}
+          SOURCE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          newest="$(gh api "repos/${GITHUB_REPOSITORY}/releases" \
+            --jq '[.[] | select(.draft == false and .tag_name != "prerelease")][0].tag_name // empty')"
+          if [[ "${newest}" != "${SOURCE_TAG}" ]]; then
+            echo "Skipping: ${SOURCE_TAG} is not the newest release (${newest:-none})."
+            exit 0
+          fi
+
+          git tag -f prerelease "${SOURCE_SHA}"
+          git push origin refs/tags/prerelease --force
+
+          notes="Floating alias for the newest build, currently \`${SOURCE_TAG}\` (\`${SOURCE_SHA}\`).
+
+          Production: https://github.com/${GITHUB_REPOSITORY}/releases/latest/download/release.tar.gz
+          Staging:    https://github.com/${GITHUB_REPOSITORY}/releases/download/prerelease/release.tar.gz"
+
+          if gh release view prerelease >/dev/null 2>&1; then
+            gh release edit prerelease --prerelease --target "${SOURCE_SHA}" \
+              --title "Newest build (staging)" --notes "${notes}"
+            gh release upload prerelease release.tar.gz --clobber
+          else
+            gh release create prerelease release.tar.gz --prerelease --target "${SOURCE_SHA}" \
+              --title "Newest build (staging)" --notes "${notes}"
+          fi

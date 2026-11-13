@@ -5,3 +5,5 @@ dist/
 config.json
 solution.json
 !examples/**/config.json
+pack/
+release.tar.gz

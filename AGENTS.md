@@ -14,7 +14,7 @@ Derived from [learn_bespoke-template](https://github.com/CodeSignal/learn_bespok
 | `IS_PRODUCTION=true npm run start:prod` serves `dist/` and the API on port 3000 | `server.js` |
 | The server reads `config.json` and writes `solution.json` in its working directory | `server.js`, `lib/files.js` |
 | Design system as a git submodule at `client/design-system` | `.gitmodules` |
-| A CI release is fetched by the session, never `npm install` in a session | release workflow |
+| A CI release is fetched by the session, never `npm install` in a session | `.github/workflows/build-release.yml`, `scripts/pack-release.js` |
 | Grading reads whatever `npm run report` prints to STDOUT | `scripts/report.js` |
 
 Deliberate divergences from the template:
@@ -49,5 +49,5 @@ Deliberate divergences from the template:
 ```bash
 npm test
 npm run validate -- examples/*/config.json
-npm run build
+npm run release:local   # build, pack and boot the tarball
 ```
