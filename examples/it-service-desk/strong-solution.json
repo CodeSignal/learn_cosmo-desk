@@ -1,0 +1,140 @@
+{
+  "version": 1,
+  "cases": {
+    "SD-2041": {
+      "category": "access",
+      "priority": "P3",
+      "owner": "identity",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2042": {
+      "category": "network",
+      "priority": "P1",
+      "owner": "network-team",
+      "escalation": "duty-manager",
+      "escalationReason": "Whole site stopped: P1 goes to the duty manager.",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2043": {
+      "category": "hardware",
+      "priority": "P4",
+      "owner": "endpoint",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2044": {
+      "category": null,
+      "priority": null,
+      "owner": null,
+      "escalation": null,
+      "escalationReason": "",
+      "duplicateOf": "SD-2042",
+      "reply": ""
+    },
+    "SD-2045": {
+      "category": "security",
+      "priority": "P2",
+      "owner": "secops",
+      "escalation": "sir",
+      "escalationReason": "Credentials entered on a suspicious page.",
+      "duplicateOf": null,
+      "reply": "Hi Helen,\n\nThanks for reporting this so quickly. I've logged it as case SD-2045 with priority P2, and Security operations will contact you within 2 working hours.\n\nPlease change your password now in the self-service portal. Don't delete or forward the email; the security team needs it as it is.\n\nSo they can act quickly, could you tell us what link you clicked and what you entered on the page, and roughly what time that was?\n\nBest regards,\nService Desk"
+    },
+    "SD-2046": {
+      "category": "email",
+      "priority": "P3",
+      "owner": "collab",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2047": {
+      "category": "network",
+      "priority": "P4",
+      "owner": "network-team",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2048": {
+      "category": "hardware",
+      "priority": "P2",
+      "owner": "endpoint",
+      "escalation": "vendor",
+      "escalationReason": "Disk failure warning on the CFO's laptop.",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2049": {
+      "category": "software",
+      "priority": "P4",
+      "owner": "apps",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2050": {
+      "category": "access",
+      "priority": "P3",
+      "owner": "identity",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2051": {
+      "category": "security",
+      "priority": "P2",
+      "owner": "secops",
+      "escalation": "sir",
+      "escalationReason": "Payroll app exposes other employees' bank details and salaries.",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2052": {
+      "category": "email",
+      "priority": "P2",
+      "owner": "collab",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2053": {
+      "category": "software",
+      "priority": "P4",
+      "owner": "apps",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": "Hi Samir,\n\nI've logged your request as case SD-2053 with priority P4. The Applications team will get back to you within 3 working days.\n\nTo process it, please send us:\n- the Python version you need\n- a line on the business reason (the weekly report automation)\n- the name of the manager who approves the install\n\nBest regards,\nService Desk"
+    },
+    "SD-2054": {
+      "category": "network",
+      "priority": "P4",
+      "owner": "network-team",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2055": {
+      "category": null,
+      "priority": null,
+      "owner": null,
+      "escalation": null,
+      "escalationReason": "",
+      "duplicateOf": "SD-2041",
+      "reply": ""
+    }
+  }
+}

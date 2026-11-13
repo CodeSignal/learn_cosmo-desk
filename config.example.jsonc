@@ -1,0 +1,97 @@
+// Annotated Cosmo Desk task config. A task delivers the real file as
+// cosmo-desk/config.json (plain JSON, no comments). Check it with:
+//   npm run validate -- path/to/config.json
+// The server drops undocumented keys before the browser sees them. Keep answer
+// keys out of this file anyway.
+{
+  // Must be 1.
+  "version": 1,
+
+  "desk": {
+    "name": "Cobalt Ridge Logistics IT Service Desk", // shown under the app name
+    "role": "Tier-1 service desk analyst", // printed in the report
+    "now": "Monday, 08:10", // the in-world time; times in cases are relative to it
+    // Shown in Help and at the top of the report. Say what to do and how many replies.
+    "brief": "You are on the Tier-1 desk for the Monday morning shift. ..."
+  },
+
+  // The four decisions the candidate makes per case. Labels are free text, so a
+  // claims desk can say "Line of business" / "Handling tier" / "Claims unit" /
+  // "Referral". Each field has 2-12 options; ids are 1-40 letters, digits,
+  // ".", "_" or "-"; labels must be unique within a field because the report
+  // prints labels.
+  "fields": {
+    "category": {
+      "label": "Category",
+      "options": [
+        { "id": "access", "label": "Access and accounts" },
+        { "id": "hardware", "label": "Hardware" }
+      ]
+    },
+    "priority": {
+      "label": "Priority",
+      "options": [
+        { "id": "P1", "label": "P1 Critical" },
+        { "id": "P2", "label": "P2 High" }
+      ]
+    },
+    "owner": {
+      "label": "Owner team",
+      "options": [
+        { "id": "identity", "label": "Identity team" },
+        { "id": "endpoint", "label": "Endpoint team" }
+      ]
+    },
+    // The app adds a "not escalated" choice (id "none", reserved) in front of these.
+    "escalation": {
+      "label": "Escalation",
+      "noneLabel": "Not escalated", // optional label for that choice, e.g. "No referral"
+      "options": [
+        { "id": "sir", "label": "Security incident response" },
+        { "id": "duty-manager", "label": "Duty manager" }
+      ]
+    }
+  },
+
+  // The routing guide: everything the candidate needs to decide each case.
+  // Sections hold paragraph, list and table blocks. Text is shown as written,
+  // with no Markdown or HTML.
+  "guide": {
+    "title": "Service desk routing guide",
+    "sections": [
+      {
+        "id": "owners",
+        "title": "Category and owner team",
+        "blocks": [
+          { "type": "paragraph", "text": "The category decides the owner team." },
+          {
+            "type": "table",
+            "columns": ["Category", "Owner team"], // 2-6 columns
+            "rows": [["Access and accounts", "Identity team"]] // 1-20 rows, one cell per column
+          }
+        ]
+      },
+      {
+        "id": "replies",
+        "title": "Writing replies",
+        // Sections marked replyRules are copied into the report for the grader.
+        // At least one is required when any case needs a reply.
+        "replyRules": true,
+        "blocks": [{ "type": "list", "items": ["Never ask for a password."] }]
+      }
+    ]
+  },
+
+  // 5-25 cases, shown in this order. At most 3 may need a reply (Hire tasks use 2).
+  "cases": [
+    {
+      "id": "SD-2041",
+      "requester": { "name": "Priya Nandakumar", "detail": "Accounts payable" }, // detail is optional
+      "channel": "Email",
+      "received": "Sunday 22:14",
+      "subject": "Can't sign in after password reset",
+      "body": "Hi, I reset my password on Friday ...", // up to 2500 characters; line breaks are kept
+      "replyRequired": false
+    }
+  ]
+}

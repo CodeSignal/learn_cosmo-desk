@@ -1,0 +1,122 @@
+{
+  "version": 1,
+  "cases": {
+    "SD-2041": {
+      "category": "access",
+      "priority": "P3",
+      "owner": "identity",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2042": {
+      "category": "network",
+      "priority": "P1",
+      "owner": "network-team",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2043": {
+      "category": "hardware",
+      "priority": "P1",
+      "owner": "endpoint",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2044": {
+      "category": "network",
+      "priority": "P1",
+      "owner": "network-team",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2045": {
+      "category": "email",
+      "priority": "P3",
+      "owner": "collab",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": "Hi, yes please delete the email. Send me your password and I'll check your account. It will be fixed by noon."
+    },
+    "SD-2046": {
+      "category": "email",
+      "priority": "P3",
+      "owner": "collab",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2047": {
+      "category": "network",
+      "priority": "P3",
+      "owner": "network-team",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2048": {
+      "category": "hardware",
+      "priority": "P3",
+      "owner": "endpoint",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2049": {
+      "category": "software",
+      "priority": "P4",
+      "owner": "apps",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2050": {
+      "category": "hardware",
+      "priority": "P3",
+      "owner": "endpoint",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2051": {
+      "category": "software",
+      "priority": "P3",
+      "owner": "apps",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2052": {
+      "category": "email",
+      "priority": "P3",
+      "owner": null,
+      "escalation": null,
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "SD-2053": {
+      "category": "software",
+      "priority": "P4",
+      "owner": "apps",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": "Will do."
+    }
+  }
+}

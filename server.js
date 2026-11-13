@@ -1,216 +1,194 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
-const url = require('url');
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-// Try to load WebSocket module, fallback if not available
-let WebSocket = null;
-let isWebSocketAvailable = false;
-try {
-  WebSocket = require('ws');
-  isWebSocketAvailable = true;
-  console.log('WebSocket support enabled');
-} catch (error) {
-  console.log('WebSocket support disabled (ws package not installed)');
-  console.log('Install with: npm install ws');
-}
+import { CONFIG_FILE, WORK_FILE, loadConfig, loadWork, saveWork } from './lib/files.js';
+import { publicConfig } from './shared/config.js';
+import { applyPatch, emptyWork } from './shared/work.js';
 
-const DIST_DIR = path.join(__dirname, 'dist');
-// Check if IS_PRODUCTION is set to true
-const isProduction = process.env.IS_PRODUCTION === 'true';
-// In production mode, dist directory must exist
-if (isProduction && !fs.existsSync(DIST_DIR)) {
-  throw new Error(`Production mode enabled but dist directory does not exist: ${DIST_DIR}`);
-}
-// Force port 3000 in production, otherwise use PORT environment variable or default to 3000
-const PORT = isProduction ? 3000 : (process.env.PORT || 3000);
+const ROOT = path.dirname(fileURLToPath(import.meta.url));
+const MAX_BODY_BYTES = 64 * 1024;
+const CASE_ROUTE = /^\/api\/work\/cases\/([^/]+)$/;
 
-// Track connected WebSocket clients
-const wsClients = new Set();
-
-// MIME types for different file extensions
-const mimeTypes = {
-  '.html': 'text/html',
-  '.js': 'text/javascript',
-  '.css': 'text/css',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.jpeg': 'image/jpeg',
-  '.gif': 'image/gif',
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.woff': 'font/woff',
   '.woff2': 'font/woff2',
   '.ttf': 'font/ttf',
-  '.eot': 'application/vnd.ms-fontobject'
 };
 
-// Get MIME type based on file extension
-function getMimeType(filePath) {
-  const ext = path.extname(filePath).toLowerCase();
-  return mimeTypes[ext] || 'text/plain';
+function sendJson(res, status, body) {
+  res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' });
+  res.end(JSON.stringify(body));
 }
 
-// Serve static files
-function serveFile(filePath, res) {
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
+class BodyTooLargeError extends Error {}
+
+function parsePathname(url) {
+  try {
+    return new URL(url, 'http://localhost').pathname;
+  } catch {
+    return null;
+  }
+}
+
+function safeDecode(component) {
+  try {
+    return decodeURIComponent(component);
+  } catch {
+    return null;
+  }
+}
+
+function readBody(req) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on('data', (chunk) => {
+      size += chunk.length;
+      if (size <= MAX_BODY_BYTES) chunks.push(chunk);
+    });
+    req.on('end', () => {
+      if (size > MAX_BODY_BYTES) {
+        reject(new BodyTooLargeError(`request body is over ${MAX_BODY_BYTES} bytes`));
+        return;
+      }
+      resolve(Buffer.concat(chunks).toString('utf8'));
+    });
+    req.on('error', reject);
+  });
+}
+
+function serveStatic(distDir, pathname, res) {
+  const relative = pathname === '/' ? 'index.html' : pathname.replace(/^\/+/, '');
+  const file = path.resolve(distDir, relative);
+  if (path.relative(distDir, file).startsWith('..')) {
+    res.writeHead(403, { 'Content-Type': 'text/plain' });
+    res.end('Forbidden');
+    return;
+  }
+  const target =
+    fs.existsSync(file) && fs.statSync(file).isFile() ? file : path.join(distDir, 'index.html');
+  fs.readFile(target, (error, data) => {
+    if (error) {
       res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('File not found');
+      res.end('Not found');
       return;
     }
-
-    const mimeType = getMimeType(filePath);
-    res.writeHead(200, { 'Content-Type': mimeType });
+    res.writeHead(200, {
+      'Content-Type': MIME_TYPES[path.extname(target).toLowerCase()] ?? 'application/octet-stream',
+    });
     res.end(data);
   });
 }
 
-// Handle POST requests
-function handlePostRequest(req, res, parsedUrl) {
-  if (parsedUrl.pathname === '/message') {
-    let body = '';
-
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-
-    req.on('end', () => {
-      try {
-        const data = JSON.parse(body);
-        const message = data.message;
-
-        if (!message) {
-          res.writeHead(400, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({ error: 'Message is required' }));
-          return;
-        }
-
-        // Check if WebSocket is available
-        if (!isWebSocketAvailable) {
-          res.writeHead(503, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify({
-            error: 'WebSocket functionality not available',
-            details: 'Install the ws package with: npm install ws'
-          }));
-          return;
-        }
-
-        // Broadcast message to all connected WebSocket clients
-        wsClients.forEach(client => {
-          if (client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify({ type: 'message', message: message }));
-          }
-        });
-
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, clientCount: wsClients.size }));
-
-      } catch (error) {
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: 'Invalid JSON' }));
-      }
-    });
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not found');
+/** An invalid config still starts the server, so the browser can show the task as broken. */
+export function createAppServer({ configFile, workFile, distDir = null }) {
+  let config = null;
+  try {
+    config = loadConfig(configFile);
+  } catch (error) {
+    console.error(error.message);
   }
-}
+  let work = config ? loadWork(config, workFile) : emptyWork();
 
-// Create HTTP server
-const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
-  let pathName = parsedUrl.pathname === '/' ? '/index.html' : parsedUrl.pathname;
-
-  // Handle POST requests
-  if (req.method === 'POST') {
-    handlePostRequest(req, res, parsedUrl);
-    return;
-  }
-
-  // In production mode, serve static files from dist directory
-  if (isProduction) {
-    // Strip leading slashes so path.join/resolve can't ignore DIST_DIR
-    let filePath = path.join(DIST_DIR, pathName.replace(/^\/+/, ''));
-
-    // Security check - prevent directory traversal
-    const resolvedDistDir = path.resolve(DIST_DIR);
-    const resolvedFilePath = path.resolve(filePath);
-    const relativePath = path.relative(resolvedDistDir, resolvedFilePath);
-
-    // Reject if path tries to traverse outside the base directory
-    if (relativePath.startsWith('..')) {
-      res.writeHead(403, { 'Content-Type': 'text/plain' });
-      res.end('Forbidden');
+  async function handleApi(req, res, pathname) {
+    if (!config) {
+      sendJson(res, 503, { error: 'This task has no valid Cosmo Desk configuration.' });
       return;
     }
-
-    serveFile(filePath, res);
-  } else {
-    // Development mode - static files are served by Vite
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Not found (development mode - use Vite dev server `npm run start:dev`)');
+    if (req.method === 'GET' && pathname === '/api/config') {
+      sendJson(res, 200, publicConfig(config));
+      return;
+    }
+    if (req.method === 'GET' && pathname === '/api/work') {
+      sendJson(res, 200, work);
+      return;
+    }
+    const caseMatch = CASE_ROUTE.exec(pathname);
+    if (req.method === 'PATCH' && caseMatch) {
+      let patch;
+      try {
+        patch = JSON.parse(await readBody(req));
+      } catch (error) {
+        const status = error instanceof BodyTooLargeError ? 413 : 400;
+        sendJson(res, status, { error: `invalid request body: ${error.message}` });
+        return;
+      }
+      const caseId = safeDecode(caseMatch[1]);
+      const result =
+        caseId === null
+          ? { error: 'invalid case id' }
+          : applyPatch(config, work, caseId, patch);
+      if (result.error) {
+        sendJson(res, 400, { error: result.error });
+        return;
+      }
+      saveWork(workFile, result.work);
+      work = result.work;
+      sendJson(res, 200, { entry: work.cases[caseId] });
+      return;
+    }
+    if (req.method === 'POST' && pathname === '/api/reset') {
+      fs.rmSync(workFile, { force: true });
+      work = emptyWork();
+      sendJson(res, 200, work);
+      return;
+    }
+    sendJson(res, 404, { error: 'not found' });
   }
-});
 
-// Create WebSocket server only if WebSocket is available
-// Note: WebSocket upgrade handling is performed automatically by the ws library
-// when attached to the HTTP server. The HTTP request handler should NOT send
-// a response for upgrade requests - the ws library handles the upgrade internally.
-if (isWebSocketAvailable) {
-  const wss = new WebSocket.Server({
-    server,
-    path: '/ws'
-  });
+  return http
+    .createServer((req, res) => {
+      const pathname = parsePathname(req.url);
+      if (pathname === null) {
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Bad request');
+        return;
+      }
+      if (pathname.startsWith('/api/')) {
+        handleApi(req, res, pathname).catch((error) => {
+          console.error(`API error on ${req.method} ${pathname}:`, error);
+          if (!res.headersSent) sendJson(res, 500, { error: 'internal error' });
+        });
+        return;
+      }
+      if (distDir && req.method === 'GET') {
+        serveStatic(distDir, pathname, res);
+        return;
+      }
+      res.writeHead(404, { 'Content-Type': 'text/plain' });
+      res.end('Not found');
+    })
+    .on('error', (error) => console.error('Server error:', error));
+}
 
-  wss.on('connection', (ws, req) => {
-    console.log('New WebSocket client connected');
-    wsClients.add(ws);
+function main() {
+  const isProduction = process.env.IS_PRODUCTION === 'true';
+  const distDir = path.join(ROOT, 'dist');
+  if (isProduction && !fs.existsSync(distDir)) {
+    throw new Error(`IS_PRODUCTION=true but ${distDir} does not exist; run npm run build first`);
+  }
+  // The session preview reaches port 3000 from outside the container, so production binds every interface.
+  const port = isProduction ? 3000 : Number(process.env.PORT || 3000);
+  const host = process.env.HOST || (isProduction ? '0.0.0.0' : '127.0.0.1');
+  const stateDir = process.env.STATE_DIR || process.cwd();
+  const configFile = process.env.CONFIG_FILE || path.join(stateDir, CONFIG_FILE);
+  const workFile = path.join(stateDir, WORK_FILE);
 
-    ws.on('close', () => {
-      console.log('WebSocket client disconnected');
-      wsClients.delete(ws);
-    });
-
-    ws.on('error', (error) => {
-      console.error('WebSocket error:', error);
-      wsClients.delete(ws);
-    });
+  const server = createAppServer({ configFile, workFile, distDir: isProduction ? distDir : null });
+  server.listen(port, host, () => {
+    console.log(`Cosmo Desk on http://${host}:${port} (config ${configFile}, work ${workFile})`);
   });
 }
 
-// Start server
-server.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-  if (isProduction) {
-    console.log(`Serving static files from: ${DIST_DIR}`);
-  } else {
-    console.log(`Development mode - static files served by Vite`);
-  }
-  if (isWebSocketAvailable) {
-    console.log(`WebSocket server running on /ws`);
-  } else {
-    console.log(`WebSocket functionality disabled - install 'ws' package to enable`);
-  }
-  console.log('Press Ctrl+C to stop the server');
-});
-
-// Handle server errors
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`Port ${PORT} is already in use. Please try a different port.`);
-  } else {
-    console.error('Server error:', err);
-  }
-  process.exit(1);
-});
-
-// Graceful shutdown
-process.on('SIGINT', () => {
-  console.log('\nShutting down server...');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
-  });
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main();
+}

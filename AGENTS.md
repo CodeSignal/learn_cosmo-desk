@@ -1,119 +1,53 @@
-# Repository Guidelines
+# Repository guidelines
 
-This repository contains a template for building embedded applications using
-the Bespoke Simulation framework. For complete template documentation, see
-[BESPOKE-TEMPLATE.md](./BESPOKE-TEMPLATE.md).
+Cosmo Desk, a case queue triage simulation. Read [README.md](README.md) for the spec and
+[docs/authoring.md](docs/authoring.md) for the task format.
 
-## Overview
+Derived from [learn_bespoke-template](https://github.com/CodeSignal/learn_bespoke-template).
+`BESPOKE-TEMPLATE.md` stays as the design system reference; this file wins where they disagree.
 
-This template provides:
-- CodeSignal Design System integration
-- Consistent layout components (header, sidebar, main content area)
-- Help modal system
-- Local development server with WebSocket support
-- Standardized file structure and naming conventions
+## Platform contracts: do not break these
 
-## Quick Start
+| Contract | Where |
+|---|---|
+| `npm run build` produces `dist/` | `vite.config.js` |
+| `IS_PRODUCTION=true npm run start:prod` serves `dist/` and the API on port 3000 | `server.js` |
+| The server reads `config.json` and writes `solution.json` in its working directory | `server.js`, `lib/files.js` |
+| Design system as a git submodule at `client/design-system` | `.gitmodules` |
+| A CI release is fetched by the session, never `npm install` in a session | release workflow |
+| Grading reads whatever `npm run report` prints to STDOUT | `scripts/report.js` |
 
-1. **Customize the HTML template** (`client/index.html`):
-   - Replace `<!-- APP_TITLE -->` with your page title
-   - Replace `<!-- APP_NAME -->` with your app name
-   - Add your main content at `<!-- APP_SPECIFIC_MAIN_CONTENT -->`
-   - Add app-specific CSS links at `<!-- APP_SPECIFIC_CSS -->`
-   - Add app-specific JavaScript at `<!-- APP_SPECIFIC_SCRIPTS -->`
+Deliberate divergences from the template:
 
-2. **Create your application files**:
-   - App-specific CSS (e.g., `my-app.css`)
-   - App-specific JavaScript (e.g., `my-app.js`)
-   - Help content (based on `help-content-template.html`)
+- **ESM and React.** `"type": "module"`; the client is React + Vite. React is a build-time
+  dependency only; the server has no runtime dependencies.
+- **No WebSocket or `/message` route.** Nothing in the simulation pushes to the browser.
+- **Binds `127.0.0.1` in development**, all interfaces only with `IS_PRODUCTION=true`.
+- **`package.json` declares `Elastic-2.0`**, matching `LICENSE`.
 
-3. **Start the development server**:
-   ```bash
-   npm start
-   ```
-   Server runs on `http://localhost:3000`
+## Rules
 
-## Key Conventions
+- **The repo is public.** Never commit answer keys for real tasks, internal identifiers, customer
+  names or credentials. `examples/` are fixtures for tests and are never given to candidates.
+- **The browser gets an allowlist.** `publicConfig` in `shared/config.js` copies only documented
+  keys. Add a key there and to `validateConfig` together, and update `config.example.jsonc` and
+  `docs/authoring.md`.
+- **Never trust what the browser sends.** Every save goes through `applyPatch`, which checks ids
+  against the config. The server stores decisions only; it never computes or stores a score.
+- **The report is the grading surface.** Keep its order and wording stable, print labels rather
+  than ids, escape candidate text (`inline`) or fence it (`fenced`), and never print expected
+  values. Update `test/report.test.js` with any change.
+- **Design system tokens** in `client/theme/app.css` for colours, spacing, radii and font sizes;
+  only layout widths, breakpoints, font weights and line heights are literal (the design system
+  has no tokens for them). Check light and dark theme, a narrow preview (under 760px) and full
+  screen.
+- `.label-*` typography classes are uppercased by the design system; use them only for
+  micro-labels.
 
-### File Naming
-
-- CSS files: kebab-case (e.g., `my-app.css`)
-- JavaScript files: kebab-case (e.g., `my-app.js`)
-- Data files: kebab-case (e.g., `solution.json`)
-- Image files: kebab-case (e.g., `overview.png`)
-
-### Error Handling
-
-- Wrap all async operations in try-catch blocks
-- Provide meaningful error messages to users
-- Log errors to console for debugging
-- Implement retry logic for network operations
-- Handle localStorage quota exceeded errors
-- Validate data before saving operations
-
-## Development Workflow
-
-### Build and Test
+## Before you commit
 
 ```bash
-# Start development server
-npm start
-
-# Development mode (same as start)
-npm run dev
+npm test
+npm run validate -- examples/*/config.json
+npm run build
 ```
-
-### WebSocket Messaging
-
-The server provides a `POST /message` endpoint for real-time messaging:
-
-```bash
-curl -X POST http://localhost:3000/message \
-  -H "Content-Type: application/json" \
-  -d '{"message": "Your message here"}'
-```
-
-This sends alerts to connected clients. Requires `ws` package:
-```bash
-npm install
-```
-
-## Template Documentation
-
-For detailed information about:
-- Design System usage and components
-- CSS implementation guidelines
-- JavaScript API (HelpModal)
-- Component reference and examples
-- Customization options
-
-See [BESPOKE-TEMPLATE.md](./BESPOKE-TEMPLATE.md).
-
-## Project Structure
-
-```
-client/
-  ├── index.html              # Main HTML template
-  ├── app.js                  # Application logic
-  ├── bespoke-template.css    # Template-specific styles
-  ├── help-modal.js           # Help modal system
-  ├── help-content-template.html  # Help content template
-  └── design-system/          # CodeSignal Design System
-      ├── colors/
-      ├── spacing/
-      ├── typography/
-      └── components/
-server.js                      # Development server
-```
-
-## Notes for AI Agents
-
-When working on applications built with this template:
-
-1. **Always reference BESPOKE-TEMPLATE.md** for template-specific
-   implementation details
-2. **Follow the conventions** listed above for file naming
-3. **Use Design System components** directly - see BESPOKE-TEMPLATE.md for
-   component classes and usage
-4. **Maintain consistency** with the template's structure and patterns
-5. **Keep guidelines up to date** by editing this AGENTS.md file as the codebase evolves

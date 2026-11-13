@@ -1,0 +1,186 @@
+{
+  "version": 1,
+  "desk": {
+    "name": "Fernbrook Mutual Claims Intake",
+    "role": "First notice of loss intake specialist",
+    "now": "Tuesday, 09:30",
+    "brief": "You staff the first notice of loss queue this morning. Eight new claims are waiting. Using the intake guide, set each claim's line of business, handling tier and claims unit, refer the claims that need it, and merge duplicate reports. One claimant needs a written reply."
+  },
+  "fields": {
+    "category": {
+      "label": "Line of business",
+      "options": [
+        { "id": "auto", "label": "Auto" },
+        { "id": "property", "label": "Home and property" },
+        { "id": "travel", "label": "Travel" },
+        { "id": "pet", "label": "Pet" }
+      ]
+    },
+    "priority": {
+      "label": "Handling tier",
+      "options": [
+        { "id": "emergency", "label": "Emergency" },
+        { "id": "fast", "label": "Fast track" },
+        { "id": "standard", "label": "Standard" }
+      ]
+    },
+    "owner": {
+      "label": "Claims unit",
+      "options": [
+        { "id": "auto-damage", "label": "Auto physical damage" },
+        { "id": "auto-injury", "label": "Auto injury" },
+        { "id": "property-unit", "label": "Property claims" },
+        { "id": "specialty", "label": "Specialty lines" }
+      ]
+    },
+    "escalation": {
+      "label": "Referral",
+      "noneLabel": "No referral",
+      "options": [
+        { "id": "siu", "label": "Special investigations unit" },
+        { "id": "cat-team", "label": "Catastrophe team" }
+      ]
+    }
+  },
+  "guide": {
+    "title": "Claims intake guide",
+    "sections": [
+      {
+        "id": "units",
+        "title": "Line of business and claims unit",
+        "blocks": [
+          {
+            "type": "table",
+            "columns": ["Line of business", "Claims unit"],
+            "rows": [
+              ["Auto, vehicle damage only", "Auto physical damage"],
+              ["Auto, anyone injured", "Auto injury"],
+              ["Home and property", "Property claims"],
+              ["Travel and Pet", "Specialty lines"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "tiers",
+        "title": "Handling tier",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Emergency: anyone injured, or a home that is unsafe to live in.",
+              "Fast track: estimated loss under 2,000 with no injury and a clear cause.",
+              "Standard: everything else.",
+              "How upset or insistent the claimant is does not change the tier."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "referrals",
+        "title": "Referrals and duplicates",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Refer to the Special investigations unit when a policy started less than 30 days before the loss, or when the claimant's account of the loss changes.",
+              "Refer to the Catastrophe team when the loss comes from the declared River Vale flood event.",
+              "If both apply, refer to the Special investigations unit.",
+              "Merge a second report of the same loss into the earliest report."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "replies",
+        "title": "Writing to claimants",
+        "replyRules": true,
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Use the claimant's name and quote the claim number.",
+              "Say which unit will handle the claim and that they will call within one working day.",
+              "Ask for photos of the damage and, for theft, the police report number.",
+              "Never say whether the claim will be paid or how much."
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "FN-7730",
+      "requester": { "name": "Gareth Lowe", "detail": "Auto policyholder for 6 years" },
+      "channel": "Phone",
+      "received": "Tuesday 08:02",
+      "subject": "Rear-ended at a junction",
+      "body": "A van hit the back of my car at the Mill Road junction. The bumper is cracked, about 900 to repair according to the garage. Nobody was hurt.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7731",
+      "requester": { "name": "Amara Diallo", "detail": "Home policyholder for 4 years" },
+      "channel": "Web form",
+      "received": "Tuesday 08:15",
+      "subject": "River water in the ground floor",
+      "body": "The River Vale flooding reached our house overnight. The ground floor is under 40 cm of water and the electrics have been cut off, so we're staying with family.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7732",
+      "requester": { "name": "Nikhil Rao", "detail": "Auto policyholder for 3 years" },
+      "channel": "Phone",
+      "received": "Tuesday 08:31",
+      "subject": "Collision on the ring road",
+      "body": "Another car merged into me on the ring road. My passenger hurt her neck and went to the emergency department to be checked.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7733",
+      "requester": { "name": "Sofia Marchetti", "detail": "Travel policy, started 12 days ago" },
+      "channel": "Email",
+      "received": "Tuesday 08:44",
+      "subject": "Camera stolen on holiday",
+      "body": "My camera was stolen from the hotel room. At first I thought I'd left it on the beach, but now I'm sure it was taken from the room. It cost about 1,800.",
+      "replyRequired": true
+    },
+    {
+      "id": "FN-7734",
+      "requester": { "name": "Gareth Lowe", "detail": "Auto policyholder for 6 years" },
+      "channel": "Web form",
+      "received": "Tuesday 08:50",
+      "subject": "Following up on my bumper",
+      "body": "I phoned earlier about a van that hit my car at Mill Road. Adding the garage quote here.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7735",
+      "requester": { "name": "Eleanor Pike", "detail": "Pet policyholder for 5 years" },
+      "channel": "Email",
+      "received": "Tuesday 09:05",
+      "subject": "Vet bill for my dog",
+      "body": "VERY URGENT. My dog ate something in the park and needed a vet visit. The bill was 340 and I want it paid back today.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7736",
+      "requester": { "name": "Tobias Grant", "detail": "Home policyholder for 8 years" },
+      "channel": "Phone",
+      "received": "Tuesday 09:12",
+      "subject": "Burst pipe in the kitchen",
+      "body": "A pipe burst under the kitchen sink. We turned off the water and the kitchen floor will need replacing. The rest of the house is fine.",
+      "replyRequired": false
+    },
+    {
+      "id": "FN-7737",
+      "requester": { "name": "Yusuf Kaya", "detail": "Home policyholder for 2 years" },
+      "channel": "Web form",
+      "received": "Tuesday 09:20",
+      "subject": "Garden shed blown over",
+      "body": "Strong wind on Sunday blew our garden shed over. The tools inside look fine. A new shed is about 650.",
+      "replyRequired": false
+    }
+  ]
+}

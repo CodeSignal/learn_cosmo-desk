@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "cases": {
+    "FN-7730": {
+      "category": "auto",
+      "priority": "fast",
+      "owner": "auto-damage",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7731": {
+      "category": "property",
+      "priority": "emergency",
+      "owner": "property-unit",
+      "escalation": "cat-team",
+      "escalationReason": "Loss from the declared River Vale flood event.",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7732": {
+      "category": "auto",
+      "priority": "emergency",
+      "owner": "auto-injury",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7733": {
+      "category": "travel",
+      "priority": "standard",
+      "owner": "specialty",
+      "escalation": "siu",
+      "escalationReason": "Policy started 12 days ago and the account of the loss changed.",
+      "duplicateOf": null,
+      "reply": "Dear Sofia,\n\nThank you for reporting the theft of your camera under claim FN-7733. Our Specialty lines team will handle your claim and will call you within one working day.\n\nTo help them, please send photos of the hotel room and any proof of purchase you have, and the police report number for the theft.\n\nKind regards,\nClaims Intake"
+    },
+    "FN-7734": {
+      "category": null,
+      "priority": null,
+      "owner": null,
+      "escalation": null,
+      "escalationReason": "",
+      "duplicateOf": "FN-7730",
+      "reply": ""
+    },
+    "FN-7735": {
+      "category": "pet",
+      "priority": "fast",
+      "owner": "specialty",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7736": {
+      "category": "property",
+      "priority": "standard",
+      "owner": "property-unit",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7737": {
+      "category": "property",
+      "priority": "fast",
+      "owner": "property-unit",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    }
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "version": 1,
+  "desk": {
+    "name": "Cobalt Ridge Logistics IT Service Desk",
+    "role": "Tier-1 service desk analyst",
+    "now": "Monday, 08:10",
+    "brief": "You are on the Tier-1 desk for the Monday morning shift. Fifteen cases came in overnight and since 07:00. Triage every case using the routing guide: set its category, priority and owner team, decide whether it needs escalation, and merge duplicates into the earliest case. Two cases also need a written reply to the requester. Your work saves as you go."
+  },
+  "fields": {
+    "category": {
+      "label": "Category",
+      "options": [
+        { "id": "access", "label": "Access and accounts" },
+        { "id": "hardware", "label": "Hardware" },
+        { "id": "network", "label": "Network and VPN" },
+        { "id": "email", "label": "Email and collaboration" },
+        { "id": "software", "label": "Software and licensing" },
+        { "id": "security", "label": "Security" }
+      ]
+    },
+    "priority": {
+      "label": "Priority",
+      "options": [
+        { "id": "P1", "label": "P1 Critical" },
+        { "id": "P2", "label": "P2 High" },
+        { "id": "P3", "label": "P3 Medium" },
+        { "id": "P4", "label": "P4 Low" }
+      ]
+    },
+    "owner": {
+      "label": "Owner team",
+      "options": [
+        { "id": "identity", "label": "Identity team" },
+        { "id": "endpoint", "label": "Endpoint team" },
+        { "id": "network-team", "label": "Network team" },
+        { "id": "collab", "label": "Collaboration team" },
+        { "id": "apps", "label": "Applications team" },
+        { "id": "secops", "label": "Security operations" }
+      ]
+    },
+    "escalation": {
+      "label": "Escalation",
+      "options": [
+        { "id": "sir", "label": "Security incident response" },
+        { "id": "duty-manager", "label": "Duty manager" },
+        { "id": "vendor", "label": "Vendor support" }
+      ]
+    }
+  },
+  "guide": {
+    "title": "Service desk routing guide",
+    "sections": [
+      {
+        "id": "owners",
+        "title": "Category and owner team",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Choose the category from what is actually wrong, not from the requester's guess. The category decides the owner team."
+          },
+          {
+            "type": "table",
+            "columns": ["Category", "Owner team"],
+            "rows": [
+              ["Access and accounts", "Identity team"],
+              ["Hardware", "Endpoint team"],
+              ["Network and VPN", "Network team"],
+              ["Email and collaboration", "Collaboration team"],
+              ["Software and licensing", "Applications team"],
+              ["Security", "Security operations"]
+            ]
+          }
+        ]
+      },
+      {
+        "id": "priority",
+        "title": "Priority",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "Priority comes from impact (how many people are affected) and urgency (whether their work has stopped)."
+          },
+          {
+            "type": "table",
+            "columns": ["Impact", "Work stopped", "Work degraded", "Can wait"],
+            "rows": [
+              ["A whole site, or more than 20 people", "P1", "P2", "P3"],
+              ["One team (2 to 20 people)", "P2", "P3", "P4"],
+              ["One person", "P3", "P4", "P4"]
+            ]
+          },
+          {
+            "type": "list",
+            "items": [
+              "Executives and anyone with a board, audit or customer deadline today: raise the priority by one level.",
+              "Security cases are never lower than P2.",
+              "Words like URGENT, ASAP or exclamation marks do not change the priority."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "duplicates",
+        "title": "Duplicates",
+        "blocks": [
+          {
+            "type": "paragraph",
+            "text": "When two cases report the same problem (the same outage, or the same requester with the same issue), merge the later case into the earliest one. A merged case keeps no routing of its own."
+          }
+        ]
+      },
+      {
+        "id": "escalation",
+        "title": "Escalation",
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Any sign that data was exposed, credentials were entered on a suspicious page, or malware ran: escalate to Security incident response.",
+              "Every P1: escalate to the Duty manager.",
+              "A device showing a disk or battery failure warning: escalate to Vendor support.",
+              "If more than one applies, Security incident response wins.",
+              "Otherwise choose Not escalated. Every escalation needs a one-line reason."
+            ]
+          }
+        ]
+      },
+      {
+        "id": "replies",
+        "title": "Writing replies",
+        "replyRules": true,
+        "blocks": [
+          {
+            "type": "list",
+            "items": [
+              "Greet the requester by name and quote the case number and its priority.",
+              "Give the first-response target for that priority: P1 30 minutes, P2 2 working hours, P3 1 working day, P4 3 working days. Never promise a fix time.",
+              "Ask only for the details listed below for the case's category.",
+              "Never ask for a password or a one-time code.",
+              "Security cases: tell the requester to change their password now in the self-service portal and not to delete or forward the suspicious email."
+            ]
+          },
+          {
+            "type": "table",
+            "columns": ["Category", "Details to ask for"],
+            "rows": [
+              ["Access and accounts", "Username and the exact error message"],
+              ["Hardware", "Asset tag and what the screen shows when it starts"],
+              ["Network and VPN", "Location and whether colleagues are affected"],
+              ["Email and collaboration", "Mailbox name and the time of one affected message"],
+              ["Software and licensing", "Software name and version, business reason, approving manager"],
+              ["Security", "What was clicked or entered, and when"]
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "SD-2041",
+      "requester": { "name": "Priya Nandakumar", "detail": "Accounts payable" },
+      "channel": "Email",
+      "received": "Sunday 22:14",
+      "subject": "Can't sign in after password reset",
+      "body": "Hi, I reset my password on Friday from home and now the laptop says the password is incorrect. I can't get into anything this morning. Thanks, Priya",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2042",
+      "requester": { "name": "Marcus Oyelaran", "detail": "Warehouse shift lead, Dock B" },
+      "channel": "Phone",
+      "received": "Monday 07:42",
+      "subject": "All Dock B scanners offline",
+      "body": "Every handheld scanner at Dock B (22 of them) dropped off the Wi-Fi at about 07:40. The pickers can't scan anything, so loading has stopped for the whole shift.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2043",
+      "requester": { "name": "Dana Whitfield", "detail": "Marketing" },
+      "channel": "Portal",
+      "received": "Monday 07:45",
+      "subject": "URGENT!!! second monitor",
+      "body": "URGENT!!! I need a second monitor for my desk, it would make my work much easier. Whenever you can get to it is fine, but please treat as urgent.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2044",
+      "requester": { "name": "Tomasz Brenner", "detail": "Warehouse, Dock B" },
+      "channel": "Portal",
+      "received": "Monday 07:51",
+      "subject": "Scanner won't connect",
+      "body": "My scanner shows 'No network' and so do the ones next to me. We are all standing around at Dock B.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2045",
+      "requester": { "name": "Helen Achebe", "detail": "Accounts receivable" },
+      "channel": "Email",
+      "received": "Monday 07:53",
+      "subject": "Invoice email asked me to log in",
+      "body": "I opened an invoice email from a supplier I don't recognise and clicked the link. It asked me to sign in with my work account so I did, then the page went blank. I'm worried I did something wrong. Should I delete the email?",
+      "replyRequired": true
+    },
+    {
+      "id": "SD-2046",
+      "requester": { "name": "Rafael Cordeiro", "detail": "Customer care team lead" },
+      "channel": "Chat",
+      "received": "Monday 07:58",
+      "subject": "Care mailbox not getting new mail",
+      "body": "The shared customer care mailbox hasn't received anything since about 06:30. The six of us can still answer older emails, but nothing new is arriving.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2047",
+      "requester": { "name": "Ingrid Solberg", "detail": "Finance analyst, working from home" },
+      "channel": "Email",
+      "received": "Monday 08:00",
+      "subject": "VPN keeps dropping",
+      "body": "My VPN disconnects every 20 minutes or so. I can reconnect and keep working, it's just annoying.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2048",
+      "requester": { "name": "Joan Mbeki", "detail": "Chief Financial Officer" },
+      "channel": "Phone",
+      "received": "Monday 08:01",
+      "subject": "Laptop won't start",
+      "body": "My laptop shows 'Disk failure imminent' and then won't start, even after a restart. I present to the board at 11:00 today.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2049",
+      "requester": { "name": "Owen Castellanos", "detail": "Operations planning" },
+      "channel": "Portal",
+      "received": "Monday 08:02",
+      "subject": "Diagram tool says licence expired",
+      "body": "The diagramming tool opens in read-only mode and says my licence expired. I can still look at my diagrams, I just can't edit them until it's renewed.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2050",
+      "requester": { "name": "Beatriz Aldana", "detail": "Procurement" },
+      "channel": "Chat",
+      "received": "Monday 08:03",
+      "subject": "Laptop broken",
+      "body": "I think my laptop is broken. When I type my password it says 'Your account has been locked. Contact your administrator.' I can't do any work.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2051",
+      "requester": { "name": "Kwame Asante", "detail": "Warehouse supervisor" },
+      "channel": "Portal",
+      "received": "Monday 08:04",
+      "subject": "Payroll app display glitch",
+      "body": "The payroll app looks odd this morning. When I opened my payslip it showed another employee's name, bank details and salary instead of mine. Two people on my team say the same happened to them. Everything else seems to work.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2052",
+      "requester": { "name": "Lena Hoffmann", "detail": "Facilities" },
+      "channel": "Email",
+      "received": "Monday 08:05",
+      "subject": "Screen sharing broken in every meeting room",
+      "body": "Screen sharing fails in all 14 meeting rooms in the head office building. Calls still work, people are just reading slides out loud.",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2053",
+      "requester": { "name": "Samir Haddad", "detail": "Data analyst" },
+      "channel": "Portal",
+      "received": "Monday 08:06",
+      "subject": "Please install Python",
+      "body": "Could you install Python on my laptop? I'd like to automate a weekly report. No rush.",
+      "replyRequired": true
+    },
+    {
+      "id": "SD-2054",
+      "requester": { "name": "Chloe Vasquez", "detail": "Office manager" },
+      "channel": "Chat",
+      "received": "Monday 08:07",
+      "subject": "Break room Wi-Fi slow",
+      "body": "The Wi-Fi in the second-floor break room is slow for the eight of us who eat lunch there. Not a big deal, but could someone look at it this week?",
+      "replyRequired": false
+    },
+    {
+      "id": "SD-2055",
+      "requester": { "name": "Priya Nandakumar", "detail": "Accounts payable" },
+      "channel": "Chat",
+      "received": "Monday 08:09",
+      "subject": "Still can't get in",
+      "body": "Following up on my email from last night. My new password still isn't accepted, so I'm still stuck.",
+      "replyRequired": false
+    }
+  ]
+}

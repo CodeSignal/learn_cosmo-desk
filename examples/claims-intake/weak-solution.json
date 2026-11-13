@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "cases": {
+    "FN-7730": {
+      "category": "auto",
+      "priority": "fast",
+      "owner": "auto-damage",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7731": {
+      "category": "property",
+      "priority": "standard",
+      "owner": "property-unit",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7732": {
+      "category": "auto",
+      "priority": "fast",
+      "owner": "auto-damage",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7733": {
+      "category": "travel",
+      "priority": "fast",
+      "owner": "specialty",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": "Hi, don't worry, this will be paid in full this week."
+    },
+    "FN-7734": {
+      "category": "auto",
+      "priority": "fast",
+      "owner": "auto-damage",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    },
+    "FN-7735": {
+      "category": "pet",
+      "priority": "emergency",
+      "owner": "specialty",
+      "escalation": "none",
+      "escalationReason": "",
+      "duplicateOf": null,
+      "reply": ""
+    }
+  }
+}

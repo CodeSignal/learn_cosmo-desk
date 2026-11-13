@@ -1,30 +1,36 @@
 {
-  "name": "bespoke-template",
-  "version": "0.0.2",
-  "description": "Bespoke template with local development server and WebSocket messaging",
+  "name": "cosmo-desk",
+  "version": "0.1.0",
+  "description": "Cosmo Desk: a case queue triage simulation for CodeSignal Learn and Hire",
+  "type": "module",
   "main": "server.js",
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "start": "npm run start:prod",
     "start:prod": "IS_PRODUCTION=true node server.js",
-    "start:dev": "concurrently \"npm run dev:vite\" \"npm run dev:api\"",
+    "start:dev": "concurrently -n vite,api -c cyan,magenta \"npm run dev:vite\" \"npm run dev:api\"",
     "dev:vite": "vite",
-    "dev:api": "PORT=3001 node server.js",
-    "build": "vite build"
+    "dev:api": "PORT=${API_PORT:-3001} CONFIG_FILE=${CONFIG_FILE:-examples/it-service-desk/config.json} STATE_DIR=${STATE_DIR:-.dev-state} sh -c 'mkdir -p \"$STATE_DIR\" && node server.js'",
+    "build": "vite build",
+    "test": "node --test \"test/*.test.js\"",
+    "validate": "node scripts/validate.js",
+    "report": "node scripts/report.js"
   },
   "keywords": [
+    "codesignal",
     "bespoke",
-    "template",
-    "development",
-    "server",
-    "websocket"
+    "simulation",
+    "triage"
   ],
-  "author": "",
-  "license": "MIT",
-  "dependencies": {
-    "ws": "^8.14.2"
-  },
+  "license": "Elastic-2.0",
   "devDependencies": {
-    "concurrently": "^8.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "concurrently": "^9.2.1",
+    "esbuild": "^0.28.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
     "vite": "^7.2.4"
   }
 }
