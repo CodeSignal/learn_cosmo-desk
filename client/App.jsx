@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { progress } from '../shared/work.js';
 import { CaseDetail } from './components/CaseDetail.jsx';
@@ -51,9 +51,7 @@ export function App() {
 
 function Desk({ config, initialWork }) {
   const { work, saveState, updateCase, retry, resetWork } = useWork(initialWork);
-  const sideGuideFits = useMediaQuery('(min-width: 1200px)');
   const narrow = useMediaQuery('(max-width: 759px)');
-  const [view, setView] = useState('queue');
   const [selectedId, setSelectedId] = useState(config.cases[0].id);
   const [narrowShowsDetail, setNarrowShowsDetail] = useState(false);
   const [filter, setFilter] = useState(() =>
@@ -64,16 +62,11 @@ function Desk({ config, initialWork }) {
   const [helpOpen, setHelpOpen] = useState(false);
   const [listFocusRequest, setListFocusRequest] = useState(0);
   const [detailFocusRequest, setDetailFocusRequest] = useState(0);
-  const [helpFocusRequest, setHelpFocusRequest] = useState(0);
-  const helpButtonRef = useRef(null);
 
   useEffect(() => {
     if (detailFocusRequest > 0) document.querySelector('.cd-detail-title')?.focus();
   }, [detailFocusRequest]);
 
-  useEffect(() => {
-    if (helpFocusRequest > 0) helpButtonRef.current?.focus();
-  }, [helpFocusRequest]);
 
   const ids = config.cases.map((item) => item.id);
   const index = Math.max(0, ids.indexOf(selectedId));
@@ -83,13 +76,11 @@ function Desk({ config, initialWork }) {
     .map((item) => item.id);
   const nextOpenId =
     openIds.find((id) => ids.indexOf(id) > index) ?? openIds.find((id) => id !== selected.id);
-  const guideShown = guideOpen && sideGuideFits;
 
   function selectCase(caseId, { keepList = false, focusDetail = false } = {}) {
     setSelectedId(caseId);
     if (!keepList) setNarrowShowsDetail(true);
     if (focusDetail || (narrow && !keepList)) setDetailFocusRequest((count) => count + 1);
-    setView('queue');
   }
 
   function backToList() {
@@ -97,27 +88,14 @@ function Desk({ config, initialWork }) {
     setListFocusRequest((count) => count + 1);
   }
 
-  function changeView(next) {
-    if (next === 'guide') setGuideFocus(null);
-    setView(next);
-  }
-
   function showGuide(sectionId) {
     setGuideFocus(sectionId ? { id: sectionId, at: Date.now() } : null);
-    if (sideGuideFits) {
-      setGuideOpen(true);
-    } else {
-      setView('guide');
-    }
+    setGuideOpen(true);
   }
 
   function toggleGuide() {
     setGuideFocus(null);
-    if (sideGuideFits) {
-      setGuideOpen((open) => !open);
-    } else {
-      setView('guide');
-    }
+    setGuideOpen((open) => !open);
   }
 
   async function startOver() {
@@ -127,7 +105,6 @@ function Desk({ config, initialWork }) {
       setNarrowShowsDetail(false);
       setFilter('todo');
       setHelpOpen(false);
-      setHelpFocusRequest((count) => count + 1);
     } catch (error) {
       console.error('Resetting the work failed:', error);
       window.alert(`Could not start over: ${error.message}`);
@@ -141,23 +118,17 @@ function Desk({ config, initialWork }) {
       <Header
         desk={config.desk}
         counts={progress(config, work)}
-        view={view}
-        onViewChange={changeView}
+        guideOpen={guideOpen}
+        onToggleGuide={toggleGuide}
         saveState={saveState}
         onRetry={() => void retry()}
         onHelp={() => setHelpOpen(true)}
-        helpButtonRef={helpButtonRef}
       />
-      {view === 'guide' ? (
-        <main className="cd-guide-page">
-          <Guide guide={config.guide} focus={guideFocus} />
-        </main>
-      ) : (
-        <main
-          className={`cd-queue${narrowShowsDetail ? ' cd-show-detail' : ''}${
-            guideShown ? ' cd-with-guide' : ''
-          }`}
-        >
+      <main
+        className={`cd-queue${narrowShowsDetail ? ' cd-show-detail' : ''}${
+          guideOpen ? ' cd-with-guide' : ''
+        }`}
+      >
           <QueueList
             cases={config.cases}
             fields={config.fields}
@@ -186,11 +157,9 @@ function Desk({ config, initialWork }) {
             onNext={nextOpenId ? () => selectCase(nextOpenId, { focusDetail: true }) : null}
             nextLabel="Next open case"
             allDone={openIds.length === 0}
-            guideOpen={guideShown}
-            onToggleGuide={toggleGuide}
             onShowReplyRules={() => showGuide(replyRulesId)}
           />
-          {guideShown && (
+          {guideOpen && (
             <aside className="cd-guide-panel" aria-label={config.guide.title}>
               <Guide
                 guide={config.guide}
@@ -200,8 +169,7 @@ function Desk({ config, initialWork }) {
               />
             </aside>
           )}
-        </main>
-      )}
+      </main>
       <Help
         open={helpOpen}
         onClose={() => setHelpOpen(false)}

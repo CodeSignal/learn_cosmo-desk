@@ -11,29 +11,31 @@ function initials(name) {
   return `${parts[0][0] ?? ''}${parts.length > 1 ? parts[parts.length - 1][0] : ''}`.toUpperCase();
 }
 
-function PillGroup({ label, value, options, onChange }) {
+function OptionColumn({ label, value, options, onChange }) {
   const name = useId();
+  const headId = useId();
   return (
-    <fieldset className="cd-pills">
-      <legend className="cd-field-label body-xsmall">{label}</legend>
-      <div className="cd-pill-row">
-        {options.map((option) => {
-          const checked = value === option.id;
-          return (
-            <label key={option.id} className={`cd-pill body-xsmall${checked ? ' cd-pill-on' : ''}`}>
-              <input
-                type="radio"
-                name={name}
-                value={option.id}
-                checked={checked}
-                onChange={() => onChange(option.id)}
-              />
-              {option.label}
-            </label>
-          );
-        })}
+    <div className="cd-col" role="radiogroup" aria-labelledby={headId}>
+      <div id={headId} className="cd-col-head label-small">
+        {label}
       </div>
-    </fieldset>
+      {options.map((option) => {
+        const checked = value === option.id;
+        return (
+          <label key={option.id} className={`cd-option body-xsmall${checked ? ' cd-option-on' : ''}`}>
+            <input
+              type="radio"
+              name={name}
+              value={option.id}
+              checked={checked}
+              onChange={() => onChange(option.id)}
+            />
+            <span className="cd-radio" aria-hidden="true" />
+            <span>{option.label}</span>
+          </label>
+        );
+      })}
+    </div>
   );
 }
 
@@ -64,8 +66,6 @@ export function CaseDetail({
   onNext,
   nextLabel,
   allDone,
-  guideOpen,
-  onToggleGuide,
   onShowReplyRules,
 }) {
   const entry = work.cases[item.id];
@@ -109,15 +109,6 @@ export function CaseDetail({
             <Icon name="chevron-right" />
           </button>
         </div>
-        <button
-          type="button"
-          className="button button-xsmall button-tertiary cd-icon-text cd-guide-toggle"
-          aria-pressed={guideOpen}
-          onClick={onToggleGuide}
-        >
-          <Icon name="book" />
-          {guideOpen ? 'Hide guide' : 'Show guide'}
-        </button>
       </div>
 
       <div className="cd-detail-scroll">
@@ -185,31 +176,33 @@ export function CaseDetail({
               separately.
             </p>
           ) : (
-            <div className="cd-decisions">
-              <PillGroup
+            <div className="cd-decisions-wrap">
+              <div className="cd-decisions">
+              <OptionColumn
                 label={fields.category.label}
                 value={current.category}
                 options={fields.category.options}
                 onChange={(category) => onChange({ category })}
               />
-              <PillGroup
+              <OptionColumn
                 label={fields.priority.label}
                 value={current.priority}
                 options={fields.priority.options}
                 onChange={(priority) => onChange({ priority })}
               />
-              <PillGroup
+              <OptionColumn
                 label={fields.owner.label}
                 value={current.owner}
                 options={fields.owner.options}
                 onChange={(owner) => onChange({ owner })}
               />
-              <PillGroup
+              <OptionColumn
                 label={fields.escalation.label}
                 value={current.escalation}
                 options={[{ id: NOT_ESCALATED, label: noneLabel(fields) }, ...fields.escalation.options]}
                 onChange={(escalation) => onChange({ escalation })}
               />
+              </div>
               {escalated && (
                 <div className="cd-reason">
                   <label htmlFor={reasonId} className="cd-field-label body-xsmall">

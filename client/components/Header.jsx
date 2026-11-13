@@ -58,7 +58,7 @@ function Progress({ counts }) {
   );
 }
 
-export function Header({ desk, counts, view, onViewChange, saveState, onRetry, onHelp, helpButtonRef }) {
+export function Header({ desk, counts, guideOpen, onToggleGuide, saveState, onRetry, onHelp }) {
   return (
     <header className="cd-header">
       <div className="cd-brand">
@@ -68,43 +68,37 @@ export function Header({ desk, counts, view, onViewChange, saveState, onRetry, o
         <div className="cd-brand-text">
           <h1 className="cd-brand-title body-small">Cosmo Desk</h1>
           <span className="cd-brand-desk body-xxsmall">
-            {desk.name}
-            <span aria-hidden="true"> · </span>
-            <span className="cd-nowrap">
-              <Icon name="clock" size={12} /> {desk.now}
+            <span className="cd-ellipsis">{desk.name}</span>
+            <span className="cd-now">
+              <Icon name="clock" size={12} />
+              {desk.now}
             </span>
           </span>
         </div>
       </div>
 
-      <nav className="cd-segmented" aria-label="Views">
-        {[
-          ['queue', 'Queue'],
-          ['guide', 'Routing guide'],
-        ].map(([id, label]) => (
-          <button
-            key={id}
-            type="button"
-            className="cd-segment body-xsmall"
-            aria-current={view === id ? 'page' : undefined}
-            onClick={() => onViewChange(id)}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
 
       <div className="cd-header-end">
         <Progress counts={counts} />
         <SaveState state={saveState} onRetry={onRetry} />
         <button
-          ref={helpButtonRef}
+          type="button"
+          className={`button button-xsmall button-tertiary cd-icon-text${guideOpen ? ' cd-toggle-on' : ''}`}
+          aria-pressed={guideOpen}
+          aria-label="Routing guide"
+          onClick={onToggleGuide}
+        >
+          <Icon name="book" />
+          <span className="cd-btn-label">Routing guide</span>
+        </button>
+        <button
           type="button"
           className="button button-xsmall button-tertiary cd-icon-text"
+          aria-label="Help"
           onClick={onHelp}
         >
           <Icon name="help" />
-          Help
+          <span className="cd-btn-label">Help</span>
         </button>
       </div>
     </header>

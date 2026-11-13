@@ -5,7 +5,6 @@ import './design-system/components/button/button.css';
 import './design-system/components/icons/icons.css';
 import './design-system/components/input/input.css';
 import './design-system/components/table/table.css';
-import './design-system/components/modal/modal.css';
 import './theme/app.css';
 
 import { StrictMode } from 'react';
