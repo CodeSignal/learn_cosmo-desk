@@ -7,7 +7,6 @@ import { Icon } from './Icon.jsx';
 const STATUS_HELP = {
   new: 'Nothing set yet',
   progress: 'Some decisions still empty',
-  reply: 'Triaged, reply still empty',
   merged: 'Marked as a duplicate',
   done: 'Everything filled in',
 };
@@ -101,7 +100,10 @@ export function Help({ open, onClose, desk, fields, onStartOver }) {
               </li>
               <li>
                 <span className="cd-step">5</span>
-                <span>Cases marked “Reply needed” also need a written reply. “Reply rules” shows how.</span>
+                <span>
+                  Decide whether the requester needs a reply; the routing guide says when. Use “Write a
+                  reply” under the case, and “Reply rules” for what to write.
+                </span>
               </li>
             </ol>
           </section>

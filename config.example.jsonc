@@ -17,9 +17,9 @@
 
   // The four decisions the candidate makes per case. Labels are free text, so a
   // claims desk can say "Line of business" / "Handling tier" / "Claims unit" /
-  // "Referral". Each field has 2-12 options; ids are 1-40 letters, digits,
-  // ".", "_" or "-"; labels must be unique within a field because the report
-  // prints labels.
+  // "Referral". Each field needs at least one option. Ids start with a letter or
+  // digit and use letters, digits, ".", "_" or "-"; labels must be unique within
+  // a field because the report prints labels.
   "fields": {
     "category": {
       "label": "Category",
@@ -82,7 +82,9 @@
     ]
   },
 
-  // 5-25 cases, shown in this order. At most 3 may need a reply (Hire tasks use 2).
+  // Cases, shown in this order. Any number; the examples use 8 and 15. Every case
+  // offers an optional reply: the candidate decides which cases need one, from
+  // the rules in the guide (put them in a section marked "replyRules").
   "cases": [
     {
       "id": "SD-2041",
@@ -90,8 +92,7 @@
       "channel": "Email",
       "received": "Sunday 22:14",
       "subject": "Can't sign in after password reset",
-      "body": "Hi, I reset my password on Friday ...", // up to 2500 characters; line breaks are kept
-      "replyRequired": false
+      "body": "Hi, I reset my password on Friday ..." // line breaks are kept
     }
   ]
 }

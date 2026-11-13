@@ -87,12 +87,11 @@ describe('sanitizeWork', () => {
 });
 
 describe('progress', () => {
-  it('counts the strong example as fully triaged with both replies', () => {
+  it('counts the strong example as fully triaged with the three replies the guide calls for', () => {
     assert.deepEqual(progress(config, readExample('it-service-desk', 'strong-solution.json')), {
       triaged: 15,
       total: 15,
-      replies: 2,
-      repliesTotal: 2,
+      replies: 3,
     });
   });
 });

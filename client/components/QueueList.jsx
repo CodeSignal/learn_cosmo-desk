@@ -11,7 +11,7 @@ export const FILTERS = [
 ];
 
 export function isOpenStatus(status) {
-  return status === 'new' || status === 'progress' || status === 'reply';
+  return status === 'new' || status === 'progress';
 }
 
 function priorityLabel(fields, entry) {
@@ -21,7 +21,7 @@ function priorityLabel(fields, entry) {
 
 export function QueueList({ cases, fields, work, selectedId, filter, onFilterChange, onSelect, focusRequest }) {
   const listRef = useRef(null);
-  const rows = cases.map((item) => ({ item, status: caseStatus(item, work.cases[item.id]) }));
+  const rows = cases.map((item) => ({ item, status: caseStatus(work.cases[item.id]) }));
   const counts = {
     todo: rows.filter((row) => isOpenStatus(row.status)).length,
     done: rows.filter((row) => !isOpenStatus(row.status)).length,
@@ -105,7 +105,12 @@ export function QueueList({ cases, fields, work, selectedId, filter, onFilterCha
                     <span className="cd-row-subject body-small">{item.subject}</span>
                     <span className="cd-row-foot body-xxsmall">
                       <span className="cd-ellipsis">{item.requester.name}</span>
-                      {status === 'reply' && <span className="cd-row-flag">Reply needed</span>}
+                      {entry?.reply?.trim() && (
+                        <span className="cd-row-reply" title="Reply written">
+                          <Icon name="reply" size={12} />
+                          <span className="cd-visually-hidden">Reply written</span>
+                        </span>
+                      )}
                       {status === 'merged' && (
                         <span className="cd-row-flag cd-row-flag-quiet">Merged into {entry.duplicateOf}</span>
                       )}

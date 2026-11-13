@@ -30,29 +30,25 @@ function SaveState({ state, onRetry }) {
 }
 
 function Progress({ counts }) {
-  const done = counts.triaged + counts.replies;
-  const total = counts.total + counts.repliesTotal;
   return (
     <div className="cd-progress">
       <div className="cd-progress-text body-xsmall">
         <span>
           <strong>{counts.triaged}</strong>/{counts.total} triaged
         </span>
-        {counts.repliesTotal > 0 && (
-          <span>
-            <strong>{counts.replies}</strong>/{counts.repliesTotal} replies
-          </span>
-        )}
+        <span>
+          <strong>{counts.replies}</strong> {counts.replies === 1 ? 'reply' : 'replies'}
+        </span>
       </div>
       <div
         className="cd-progress-track"
         role="progressbar"
-        aria-label="Overall progress"
+        aria-label="Cases triaged"
         aria-valuemin={0}
-        aria-valuemax={total}
-        aria-valuenow={done}
+        aria-valuemax={counts.total}
+        aria-valuenow={counts.triaged}
       >
-        <div className="cd-progress-fill" style={{ width: `${(done / total) * 100}%` }} />
+        <div className="cd-progress-fill" style={{ width: `${(counts.triaged / counts.total) * 100}%` }} />
       </div>
     </div>
   );

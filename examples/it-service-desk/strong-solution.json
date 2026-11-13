@@ -98,7 +98,7 @@
       "escalation": "sir",
       "escalationReason": "Payroll app exposes other employees' bank details and salaries.",
       "duplicateOf": null,
-      "reply": ""
+      "reply": "Hi Kwame,\n\nThank you for flagging this. I've logged it as case SD-2051 with priority P2, and Security operations will contact you within 2 working hours.\n\nPlease change your password now in the self-service portal. Don't delete or forward anything you received about it.\n\nTo help them, could you tell us what you saw on screen (another employee's name and details) and roughly what time you opened the payslip?\n\nBest regards,\nService Desk"
     },
     "SD-2052": {
       "category": "email",

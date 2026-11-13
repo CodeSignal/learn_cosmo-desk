@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { useId, useState } from 'react';
 
 import { FIELD_KEYS, NOT_ESCALATED, noneLabel } from '../../shared/config.js';
 import { TEXT_LIMITS, emptyEntry, isTriaged, mergedInto } from '../../shared/work.js';
@@ -54,6 +54,78 @@ function DuplicateField({ item, cases, work, value, onChange }) {
   return <DuplicatePicker targets={targets} value={value} onChange={onChange} />;
 }
 
+function ReplyCard({ item, reply, onChange, onShowReplyRules }) {
+  const replyId = useId();
+  const [open, setOpen] = useState(reply.trim() !== '');
+  const rulesLink = (
+    <button type="button" className="cd-link-button body-xxsmall cd-icon-text" onClick={onShowReplyRules}>
+      <Icon name="book" size={14} />
+      Reply rules
+    </button>
+  );
+
+  if (!open) {
+    return (
+      <section className="cd-card cd-reply-closed" aria-label="Reply">
+        <div className="cd-reply-ask">
+          <span className="cd-dialog-icon" aria-hidden="true">
+            <Icon name="reply" />
+          </span>
+          <div>
+            <p className="body-small cd-strong">Does {item.requester.name} need a reply?</p>
+            <p className="body-xsmall cd-muted">The routing guide says which cases get one.</p>
+          </div>
+        </div>
+        <div className="cd-reply-actions">
+          {rulesLink}
+          <button type="button" className="button button-xsmall button-secondary cd-icon-text" onClick={() => setOpen(true)}>
+            <Icon name="reply" size={14} />
+            Write a reply
+          </button>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="cd-card" aria-label="Reply">
+      <div className="cd-card-head">
+        <h3 className="heading-xxxsmall">Reply</h3>
+        {rulesLink}
+      </div>
+      <label htmlFor={replyId} className="cd-reply-to body-xsmall">
+        <Icon name="reply" size={14} />
+        To: <strong>{item.requester.name}</strong>
+      </label>
+      <textarea
+        id={replyId}
+        className="input cd-reply"
+        rows={9}
+        autoFocus={reply === ''}
+        maxLength={TEXT_LIMITS.reply}
+        placeholder={`Write your reply to ${item.requester.name}…`}
+        value={reply}
+        onChange={(event) => onChange({ reply: event.target.value }, { debounce: true })}
+      />
+      <div className="cd-reply-foot">
+        <button
+          type="button"
+          className="cd-link-button cd-danger-link body-xxsmall"
+          onClick={() => {
+            onChange({ reply: '' });
+            setOpen(false);
+          }}
+        >
+          Discard reply
+        </button>
+        <span className="body-xxsmall cd-muted">
+          {reply.length} / {TEXT_LIMITS.reply}
+        </span>
+      </div>
+    </section>
+  );
+}
+
 export function CaseDetail({
   item,
   position,
@@ -72,8 +144,7 @@ export function CaseDetail({
   const current = entry ?? emptyEntry();
   const titleId = useId();
   const reasonId = useId();
-  const replyId = useId();
-  const missing = missingParts(fields, item, entry);
+  const missing = missingParts(fields, entry);
   const merged = Boolean(current.duplicateOf);
   const escalated = Boolean(current.escalation) && current.escalation !== NOT_ESCALATED;
   const decided = FIELD_KEYS.filter((key) => current[key]).length;
@@ -224,33 +295,12 @@ export function CaseDetail({
           )}
         </section>
 
-        {item.replyRequired && (
-          <section className="cd-card" aria-label="Reply">
-            <div className="cd-card-head">
-              <h3 className="heading-xxxsmall">Reply</h3>
-              <button type="button" className="cd-link-button body-xxsmall cd-icon-text" onClick={onShowReplyRules}>
-                <Icon name="book" size={14} />
-                Reply rules
-              </button>
-            </div>
-            <label htmlFor={replyId} className="cd-reply-to body-xsmall">
-              <Icon name="reply" size={14} />
-              To: <strong>{item.requester.name}</strong>
-            </label>
-            <textarea
-              id={replyId}
-              className="input cd-reply"
-              rows={9}
-              maxLength={TEXT_LIMITS.reply}
-              placeholder={`Write your reply to ${item.requester.name}…`}
-              value={current.reply}
-              onChange={(event) => onChange({ reply: event.target.value }, { debounce: true })}
-            />
-            <span className="body-xxsmall cd-muted cd-counter">
-              {current.reply.length} / {TEXT_LIMITS.reply}
-            </span>
-          </section>
-        )}
+        <ReplyCard
+          item={item}
+          reply={current.reply}
+          onChange={onChange}
+          onShowReplyRules={onShowReplyRules}
+        />
 
         <footer className="cd-detail-foot">
           {allDone ? (

@@ -12,8 +12,8 @@ an eligibility desk or a fraud alert queue.
 
 ## Spec
 
-- **Candidate:** triages 5 to 25 cases (15 in a Hire task) against a routing guide and writes up
-  to 3 replies (2 in a Hire task).
+- **Candidate:** triages a queue of cases against a routing guide and decides which requesters
+  need a written reply (the examples use 8 and 15 cases).
 - **Kind:** builder; the triaged queue is the artifact. No AI in the app.
 - **Grading:** a judged state report. `npm run report` prints every decision and reply in a fixed
   order; the platform's grader judges it against criteria the app never sees.

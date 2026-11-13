@@ -137,11 +137,9 @@ export function hasReply(entry) {
 }
 
 export function progress(config, work) {
-  const replyCases = config.cases.filter((item) => item.replyRequired);
   return {
     triaged: config.cases.filter((item) => isTriaged(work.cases[item.id])).length,
     total: config.cases.length,
-    replies: replyCases.filter((item) => hasReply(work.cases[item.id])).length,
-    repliesTotal: replyCases.length,
+    replies: config.cases.filter((item) => hasReply(work.cases[item.id])).length,
   };
 }

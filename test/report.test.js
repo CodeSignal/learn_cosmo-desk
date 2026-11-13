@@ -51,7 +51,7 @@ describe('renderReport', () => {
     let { work } = applyPatch(config, emptyWork(), 'SD-2047', { escalation: 'vendor', escalationReason: 'stale reason' });
     ({ work } = applyPatch(config, work, 'SD-2047', { escalation: 'none' }));
     const report = renderReport(config, work);
-    assert.match(row(report, 'SD-2047'), /\| Not escalated \| — \|$/);
+    assert.match(row(report, 'SD-2047'), /\| Not escalated \| — \| — \|$/);
     assert.ok(!report.includes('stale reason'));
   });
 
@@ -59,9 +59,20 @@ describe('renderReport', () => {
     assert.match(strong, /- Shift time at the start: Monday, 08:10/);
   });
 
-  it('says so when a reply case has no reply', () => {
+  it('lists exactly the cases the candidate chose to reply to', () => {
+    assert.match(strong, /- Replies written: 3 \(SD-2045, SD-2051, SD-2053\)/);
+    assert.match(weak, /- Replies written: 3 \(SD-2043, SD-2045, SD-2053\)/);
+    assert.match(row(strong, 'SD-2051'), /\| written \|$/);
+    assert.match(row(strong, 'SD-2043'), /\| — \|$/);
+    assert.match(weak, /### SD-2043: URGENT!!! second monitor[\s\S]*we'll get your monitor to you today/);
+  });
+
+  it('says so when the candidate wrote no replies, and still prints the reply rules', () => {
     const { work } = applyPatch(config, emptyWork(), 'SD-2041', { priority: 'P3' });
-    assert.equal(renderReport(config, work).match(/_No reply written\._/g).length, 2);
+    const report = renderReport(config, work);
+    assert.match(report, /- Replies written: 0 \(none\)/);
+    assert.match(report, /_The candidate wrote no replies\._/);
+    assert.match(report, /## Reply rules from the routing guide[\s\S]*Reply only to every Security case/);
   });
 
   it('keeps candidate text from breaking the table or the reply fence', () => {
@@ -72,7 +83,7 @@ describe('renderReport', () => {
     ({ work } = applyPatch(config, work, 'SD-2045', { reply: 'Hi\n```\n## injected\n```' }));
     const report = renderReport(config, work);
 
-    assert.equal(row(report, 'SD-2042').split(' | ').length, 8);
+    assert.equal(row(report, 'SD-2042').split(' | ').length, 9);
     assert.match(row(report, 'SD-2042'), /site down \\\| see \\<b\\>log\\<\/b\\> \\#\\# not a heading/);
     assert.match(report, /````text\nHi\n```\n## injected\n```\n````/);
   });

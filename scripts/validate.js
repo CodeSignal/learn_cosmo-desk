@@ -10,8 +10,7 @@ let failed = false;
 for (const file of files) {
   try {
     const config = loadConfig(file);
-    const replies = config.cases.filter((item) => item.replyRequired).length;
-    console.log(`OK ${file}: ${config.cases.length} cases, ${replies} needing a reply`);
+    console.log(`OK ${file}: ${config.cases.length} cases, ${config.guide.sections.length} guide sections`);
   } catch (error) {
     if (!(error instanceof ConfigError)) throw error;
     failed = true;

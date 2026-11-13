@@ -465,6 +465,13 @@ button {
   font-weight: 600;
 }
 
+.cd-row-reply {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--Colors-Text-Body-Primary);
+}
+
 .cd-row-flag-quiet {
   color: var(--Colors-Text-Body-Medium);
   font-weight: 500;
@@ -870,6 +877,32 @@ button {
   height: var(--UI-Input-sm);
 }
 
+.cd-reply-closed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--UI-Spacing-spacing-ms);
+}
+
+.cd-reply-ask {
+  display: flex;
+  align-items: center;
+  gap: var(--UI-Spacing-spacing-mxs);
+}
+
+.cd-reply-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--UI-Spacing-spacing-ms);
+}
+
+.cd-reply-foot {
+  display: flex;
+  justify-content: space-between;
+  margin-top: calc(-1 * var(--UI-Spacing-spacing-s));
+}
+
 .cd-reply-to {
   display: inline-flex;
   align-items: center;
@@ -887,10 +920,6 @@ button {
   line-height: 1.6;
 }
 
-.cd-counter {
-  justify-self: end;
-  margin-top: calc(-1 * var(--UI-Spacing-spacing-s));
-}
 
 .cd-detail-foot {
   display: flex;

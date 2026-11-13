@@ -55,7 +55,7 @@ function Desk({ config, initialWork }) {
   const [selectedId, setSelectedId] = useState(config.cases[0].id);
   const [narrowShowsDetail, setNarrowShowsDetail] = useState(false);
   const [filter, setFilter] = useState(() =>
-    config.cases.some((item) => isOpenStatus(caseStatus(item, initialWork.cases[item.id]))) ? 'todo' : 'all'
+    config.cases.some((item) => isOpenStatus(caseStatus(initialWork.cases[item.id]))) ? 'todo' : 'all'
   );
   const [guideOpen, setGuideOpen] = useState(() => window.matchMedia('(min-width: 1360px)').matches);
   const [guideFocus, setGuideFocus] = useState(null);
@@ -72,7 +72,7 @@ function Desk({ config, initialWork }) {
   const index = Math.max(0, ids.indexOf(selectedId));
   const selected = config.cases[index];
   const openIds = config.cases
-    .filter((item) => isOpenStatus(caseStatus(item, work.cases[item.id])))
+    .filter((item) => isOpenStatus(caseStatus(work.cases[item.id])))
     .map((item) => item.id);
   const nextOpenId =
     openIds.find((id) => ids.indexOf(id) > index) ?? openIds.find((id) => id !== selected.id);
