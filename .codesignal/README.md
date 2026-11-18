@@ -12,6 +12,9 @@ shows up in one diff. Nothing in this directory runs from the repo.
 
 - **One directory**, `cosmo-desk/`, holds the release, the task's `config.json` (project file
   `cosmo-desk/config.json`) and the candidate's saved work, `solution.json`.
+- **Demo desk:** the base task also holds `examples/it-service-desk/config.json` as
+  `cosmo-desk/config.json` (no `readonly_` prefix), so its own question opens a working desk. A
+  task's project file at the same path replaces it on export; keep the prefix off, or both files ship.
 - **Channels:** `setup.sh` downloads the `latest` release, or the floating `prerelease` build when
   `$APP_ENVIRONMENT` is `staging` (see the main README, "Releases").
 - **Fails closed:** a failed download or unpack stops the session instead of starting a release an
