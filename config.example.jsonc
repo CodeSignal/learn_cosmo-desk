@@ -82,13 +82,39 @@
     ]
   },
 
+  // Optional: account records the candidate can open from a case. Leave the key
+  // out when the desk's real tool shows no account history. Records are facts
+  // like the case text: write guide rules that read them ("two or more earlier
+  // claims in the last 12 months: refer"), and keep times relative.
+  "customers": {
+    "label": "Employee", // optional, default "Customer"; shown as "<label> record"
+    "accounts": [
+      {
+        "id": "EMP-1182",
+        "name": "Priya Nandakumar",
+        "detail": "Accounts payable, joined 3 years ago", // optional
+        // Optional: label and value pairs, shown in the order given.
+        "facts": [
+          { "label": "Device", "value": "Laptop, asset CR-L-0412" },
+          { "label": "VIP", "value": "No" }
+        ],
+        // Optional: earlier, closed cases. Ids are unique across all accounts and
+        // never reuse a queue case id; earlier cases cannot be merged into.
+        "history": [
+          { "id": "SD-1907", "when": "2 weeks ago", "subject": "Password expired", "outcome": "Resolved" }
+        ]
+      }
+    ]
+  },
+
   // Cases, shown in this order. Any number; the examples use 8 and 15. Every case
   // offers an optional reply: the candidate decides which cases need one, from
   // the rules in the guide (put them in a section marked "replyRules").
   "cases": [
     {
       "id": "SD-2041",
-      "requester": { "name": "Priya Nandakumar", "detail": "Accounts payable" }, // detail is optional
+      // detail is optional; customerId links an account from customers.accounts
+      "requester": { "name": "Priya Nandakumar", "detail": "Accounts payable", "customerId": "EMP-1182" },
       "channel": "Email",
       "received": "Sunday 22:14",
       "subject": "Can't sign in after password reset",

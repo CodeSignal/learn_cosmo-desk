@@ -71,6 +71,12 @@ const PATHS = {
       <circle cx="8" cy="11.3" r=".4" fill="currentColor" />
     </>
   ),
+  person: (
+    <>
+      <circle cx="8" cy="5.5" r="2.5" />
+      <path d="M3 13.5c.6-2.6 2.6-4 5-4s4.4 1.4 5 4" />
+    </>
+  ),
   'chevron-left': <path d="M10 3.5 5.5 8l4.5 4.5" />,
   'chevron-right': <path d="m6 3.5 4.5 4.5L6 12.5" />,
   close: <path d="M4 4l8 8M12 4l-8 8" />,

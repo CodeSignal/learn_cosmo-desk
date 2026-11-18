@@ -4,7 +4,7 @@
     "name": "Fernbrook Mutual Claims Intake",
     "role": "First notice of loss intake specialist",
     "now": "Tuesday, 09:30",
-    "brief": "You staff the first notice of loss queue this morning. Eight new claims are waiting. Using the intake guide, set each claim's line of business, handling tier and claims unit, refer the claims that need it, and merge duplicate reports. Write to the claimants the guide says need a message."
+    "brief": "You staff the first notice of loss queue this morning. Eight new claims are waiting. Using the intake guide and each claimant's policyholder record, set each claim's line of business, handling tier and claims unit, refer the claims that need it, and merge duplicate reports. Write to the claimants the guide says need a message."
   },
   "fields": {
     "category": {
@@ -125,6 +125,7 @@
               "Emergency: anyone injured, or a home that is unsafe to live in.",
               "Fast track: estimated loss under 2,000 with no injury and a clear cause.",
               "Standard: everything else.",
+              "Priority care: when the policyholder record shows Priority care, the claim is never Standard. Use Fast track unless it is an Emergency.",
               "How upset or insistent the claimant is does not change the tier."
             ]
           }
@@ -138,6 +139,7 @@
             "type": "list",
             "items": [
               "Refer to the Special investigations unit when a policy started less than 30 days before the loss, or when the claimant's account of the loss changes.",
+              "Refer to the Special investigations unit when the policyholder record shows two or more earlier claims in the 12 months before this one. Older claims do not count.",
               "Refer to the Catastrophe team when the loss comes from the declared River Vale flood event.",
               "If both apply, refer to the Special investigations unit.",
               "Merge a second report of the same loss into the earliest report."
@@ -158,10 +160,201 @@
             "type": "list",
             "items": [
               "Use the claimant's name and quote the claim number.",
-              "Say which unit will handle the claim and that they will call within one working day.",
+              "Say which team the claim is referred to and that they will call within one working day.",
               "Ask for photos of the damage and, for theft, the police report number.",
               "Never say whether the claim will be paid or how much."
             ]
+          }
+        ]
+      }
+    ]
+  },
+  "customers": {
+    "label": "Policyholder",
+    "accounts": [
+      {
+        "id": "PH-40211",
+        "name": "Gareth Lowe",
+        "detail": "Policyholder for 6 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Auto, comprehensive"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Phone"
+          }
+        ],
+        "history": [
+          {
+            "id": "FN-5102",
+            "when": "3 years ago",
+            "subject": "Windscreen chip repaired",
+            "outcome": "Paid"
+          }
+        ]
+      },
+      {
+        "id": "PH-38877",
+        "name": "Amara Diallo",
+        "detail": "Policyholder for 4 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Home, buildings and contents"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Phone"
+          }
+        ],
+        "history": []
+      },
+      {
+        "id": "PH-51390",
+        "name": "Nikhil Rao",
+        "detail": "Policyholder for 3 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Auto, comprehensive"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Email"
+          }
+        ],
+        "history": [
+          {
+            "id": "FN-6618",
+            "when": "2 years ago",
+            "subject": "Car park scrape on the rear door",
+            "outcome": "Paid"
+          }
+        ]
+      },
+      {
+        "id": "PH-60415",
+        "name": "Sofia Marchetti",
+        "detail": "Policyholder since 12 days ago",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Travel, single trip"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Email"
+          }
+        ],
+        "history": []
+      },
+      {
+        "id": "PH-29954",
+        "name": "Eleanor Pike",
+        "detail": "Policyholder for 5 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Pet, accident and illness"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Phone"
+          }
+        ],
+        "history": [
+          {
+            "id": "FN-7311",
+            "when": "3 months ago",
+            "subject": "Vet bill: swallowed a toy",
+            "outcome": "Paid"
+          },
+          {
+            "id": "FN-6980",
+            "when": "8 months ago",
+            "subject": "Vet bill: ear infection",
+            "outcome": "Paid"
+          },
+          {
+            "id": "FN-5947",
+            "when": "2 years ago",
+            "subject": "Vet bill: sprained paw",
+            "outcome": "Paid"
+          }
+        ]
+      },
+      {
+        "id": "PH-22760",
+        "name": "Tobias Grant",
+        "detail": "Policyholder for 8 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Home, buildings and contents"
+          },
+          {
+            "label": "Priority care",
+            "value": "Yes: hearing loss, contact by email or text only"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Email"
+          }
+        ],
+        "history": []
+      },
+      {
+        "id": "PH-55203",
+        "name": "Yusuf Kaya",
+        "detail": "Policyholder for 2 years",
+        "facts": [
+          {
+            "label": "Policies",
+            "value": "Home, buildings only"
+          },
+          {
+            "label": "Priority care",
+            "value": "No"
+          },
+          {
+            "label": "Contact preference",
+            "value": "Phone"
+          }
+        ],
+        "history": [
+          {
+            "id": "FN-7268",
+            "when": "4 months ago",
+            "subject": "Roof tiles lifted in a storm",
+            "outcome": "Paid"
+          },
+          {
+            "id": "FN-6311",
+            "when": "14 months ago",
+            "subject": "Fence panel blown down",
+            "outcome": "Paid"
           }
         ]
       }
@@ -172,7 +365,8 @@
       "id": "FN-7730",
       "requester": {
         "name": "Gareth Lowe",
-        "detail": "Auto policyholder for 6 years"
+        "detail": "Auto policyholder for 6 years",
+        "customerId": "PH-40211"
       },
       "channel": "Phone",
       "received": "Tuesday 08:02",
@@ -183,7 +377,8 @@
       "id": "FN-7731",
       "requester": {
         "name": "Amara Diallo",
-        "detail": "Home policyholder for 4 years"
+        "detail": "Home policyholder for 4 years",
+        "customerId": "PH-38877"
       },
       "channel": "Web form",
       "received": "Tuesday 08:15",
@@ -194,7 +389,8 @@
       "id": "FN-7732",
       "requester": {
         "name": "Nikhil Rao",
-        "detail": "Auto policyholder for 3 years"
+        "detail": "Auto policyholder for 3 years",
+        "customerId": "PH-51390"
       },
       "channel": "Phone",
       "received": "Tuesday 08:31",
@@ -205,7 +401,8 @@
       "id": "FN-7733",
       "requester": {
         "name": "Sofia Marchetti",
-        "detail": "Travel policy, started 12 days ago"
+        "detail": "Travel policy, started 12 days ago",
+        "customerId": "PH-60415"
       },
       "channel": "Email",
       "received": "Tuesday 08:44",
@@ -216,7 +413,8 @@
       "id": "FN-7734",
       "requester": {
         "name": "Gareth Lowe",
-        "detail": "Auto policyholder for 6 years"
+        "detail": "Auto policyholder for 6 years",
+        "customerId": "PH-40211"
       },
       "channel": "Web form",
       "received": "Tuesday 08:50",
@@ -227,7 +425,8 @@
       "id": "FN-7735",
       "requester": {
         "name": "Eleanor Pike",
-        "detail": "Pet policyholder for 5 years"
+        "detail": "Pet policyholder for 5 years",
+        "customerId": "PH-29954"
       },
       "channel": "Email",
       "received": "Tuesday 09:05",
@@ -238,7 +437,8 @@
       "id": "FN-7736",
       "requester": {
         "name": "Tobias Grant",
-        "detail": "Home policyholder for 8 years"
+        "detail": "Home policyholder for 8 years",
+        "customerId": "PH-22760"
       },
       "channel": "Phone",
       "received": "Tuesday 09:12",
@@ -249,7 +449,8 @@
       "id": "FN-7737",
       "requester": {
         "name": "Yusuf Kaya",
-        "detail": "Home policyholder for 2 years"
+        "detail": "Home policyholder for 2 years",
+        "customerId": "PH-55203"
       },
       "channel": "Web form",
       "received": "Tuesday 09:20",

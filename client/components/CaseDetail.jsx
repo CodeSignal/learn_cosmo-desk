@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 
-import { FIELD_KEYS, NOT_ESCALATED, noneLabel } from '../../shared/config.js';
+import { FIELD_KEYS, NOT_ESCALATED, accountFor, customerLabel, noneLabel } from '../../shared/config.js';
 import { TEXT_LIMITS, emptyEntry, isTriaged, mergedInto } from '../../shared/work.js';
 import { missingParts } from '../lib/status.js';
 import { DuplicatePicker } from './DuplicatePicker.jsx';
@@ -52,6 +52,79 @@ function DuplicateField({ item, cases, work, value, onChange }) {
   }
   const targets = cases.filter((other) => other.id !== item.id && !work.cases[other.id]?.duplicateOf);
   return <DuplicatePicker targets={targets} value={value} onChange={onChange} />;
+}
+
+function plural(count, word) {
+  return `${count} ${word}${count === 1 ? '' : 's'}`;
+}
+
+/** Collapsed until the candidate opens it: reading the record is part of the judgement. */
+function AccountRecord({ account, label }) {
+  const [open, setOpen] = useState(false);
+  const panelId = useId();
+  const facts = account.facts ?? [];
+  const history = account.history ?? [];
+  const summary = [
+    account.id,
+    plural(facts.length, 'detail'),
+    history.length === 0 ? 'no earlier cases' : plural(history.length, 'earlier case'),
+  ].join(' · ');
+
+  return (
+    <section className={`cd-card cd-record${open ? ' cd-record-open' : ''}`} aria-label={`${label} record`}>
+      <button
+        type="button"
+        className="cd-record-toggle"
+        aria-expanded={open}
+        aria-controls={panelId}
+        onClick={() => setOpen(!open)}
+      >
+        <span className="cd-dialog-icon" aria-hidden="true">
+          <Icon name="person" />
+        </span>
+        <span className="cd-record-title">
+          <span className="body-small cd-strong">
+            {label} record: {account.name}
+          </span>
+          <span className="body-xxsmall cd-muted">{summary}</span>
+        </span>
+        <span className="cd-record-action body-xxsmall">
+          {open ? 'Hide' : 'Show'}
+          <Icon name="chevron-right" size={14} className="cd-record-chevron" />
+        </span>
+      </button>
+      <div id={panelId} className="cd-record-body" hidden={!open}>
+        {account.detail && <p className="body-xsmall cd-muted">{account.detail}</p>}
+        {facts.length > 0 && (
+          <dl className="cd-record-facts body-xsmall">
+            {facts.map((fact, index) => (
+              <div key={index} className="cd-record-fact">
+                <dt className="cd-muted">{fact.label}</dt>
+                <dd>{fact.value}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
+        <div className="cd-record-history">
+          <h4 className="label-small cd-muted">Earlier cases</h4>
+          {history.length === 0 ? (
+            <p className="body-xsmall cd-muted">No earlier cases.</p>
+          ) : (
+            <ol className="cd-record-list">
+              {history.map((entry) => (
+                <li key={entry.id} className="cd-record-entry body-xsmall">
+                  <span className="cd-row-id body-xxsmall">{entry.id}</span>
+                  <span className="cd-record-when body-xxsmall cd-muted">{entry.when}</span>
+                  <span className="cd-record-subject">{entry.subject}</span>
+                  <span className="cd-record-outcome body-xxsmall">{entry.outcome}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function ReplyCard({ item, reply, onChange, onShowReplyRules }) {
@@ -127,6 +200,7 @@ function ReplyCard({ item, reply, onChange, onShowReplyRules }) {
 }
 
 export function CaseDetail({
+  config,
   item,
   position,
   cases,
@@ -149,6 +223,7 @@ export function CaseDetail({
   const escalated = Boolean(current.escalation) && current.escalation !== NOT_ESCALATED;
   const decided = FIELD_KEYS.filter((key) => current[key]).length;
   const triaged = isTriaged(entry);
+  const account = accountFor(config, item);
 
   return (
     <section className="cd-detail" aria-labelledby={titleId}>
@@ -214,6 +289,8 @@ export function CaseDetail({
           </div>
           <p className="body-medium cd-message-body">{item.body}</p>
         </article>
+
+        {account && <AccountRecord account={account} label={customerLabel(config)} />}
 
         <section className="cd-card" aria-label="Triage">
           <div className="cd-card-head">

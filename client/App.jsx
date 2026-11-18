@@ -146,6 +146,7 @@ function Desk({ config, initialWork }) {
           />
           <CaseDetail
             key={selected.id}
+            config={config}
             item={selected}
             position={{
               index,

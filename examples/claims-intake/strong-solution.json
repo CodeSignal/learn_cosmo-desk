@@ -35,7 +35,7 @@
       "escalation": "siu",
       "escalationReason": "Policy started 12 days ago and the account of the loss changed.",
       "duplicateOf": null,
-      "reply": "Dear Sofia,\n\nThank you for reporting the theft of your camera under claim FN-7733. Our Specialty lines team will handle your claim and will call you within one working day.\n\nTo help them, please send photos of the hotel room and any proof of purchase you have, and the police report number for the theft.\n\nKind regards,\nClaims Intake"
+      "reply": "Dear Sofia,\n\nThank you for reporting the theft of your camera under claim FN-7733. Our Special investigations unit will handle your claim and will call you within one working day.\n\nTo help them, please send photos of the hotel room and any proof of purchase you have, and the police report number for the theft.\n\nKind regards,\nClaims Intake"
     },
     "FN-7734": {
       "category": null,
@@ -50,14 +50,14 @@
       "category": "pet",
       "priority": "fast",
       "owner": "specialty",
-      "escalation": "none",
-      "escalationReason": "",
+      "escalation": "siu",
+      "escalationReason": "Two earlier claims in the last 12 months on the policyholder record.",
       "duplicateOf": null,
-      "reply": ""
+      "reply": "Dear Eleanor,\n\nThank you for reporting your dog's vet bill under claim FN-7735. Our Special investigations unit will handle your claim and will call you within one working day.\n\nTo help them, please send photos of the vet's invoice and of anything your dog damaged or swallowed, if you have them.\n\nKind regards,\nClaims Intake"
     },
     "FN-7736": {
       "category": "property",
-      "priority": "standard",
+      "priority": "fast",
       "owner": "property-unit",
       "escalation": "none",
       "escalationReason": "",

@@ -94,6 +94,19 @@ describe('report helpers', () => {
     assert.equal(fenced('a ````` b'), '``````text\na ````` b\n``````');
   });
 
+  it('shows the account record under a reply, so the grader can check the reply against it', () => {
+    const claims = exampleConfig('claims-intake');
+    const report = renderReport(claims, readExample('claims-intake', 'strong-solution.json'));
+    const section = report.slice(report.indexOf('### FN-7735'), report.indexOf("Candidate's reply", report.indexOf('### FN-7735')));
+    assert.match(section, /Policyholder record: Eleanor Pike \(PH-29954, Policyholder for 5 years\)/);
+    assert.match(section, /- Priority care: No/);
+    assert.match(section, /\| FN-6980 \| 8 months ago \| Vet bill: ear infection \| Paid \|/);
+  });
+
+  it('prints no account record for a case whose requester has none', () => {
+    assert.doesNotMatch(strong, /record:/);
+  });
+
   it('collapses whitespace and escapes Markdown in inline text', () => {
     assert.equal(inline('  a\n|b*  '), 'a \\|b\\*');
   });

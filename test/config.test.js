@@ -56,6 +56,39 @@ describe('validateConfig', () => {
     assert.match(validateConfig(config).join('\n'), /must have 2 cells, one per column/);
   });
 
+  it('rejects a customerId that names no account', () => {
+    const config = exampleConfig('claims-intake');
+    config.cases[0].requester.customerId = 'PH-00000';
+    assert.match(validateConfig(config).join('\n'), /cases\[0\]\.requester\.customerId "PH-00000" is not an id in customers\.accounts/);
+  });
+
+  it('rejects a customerId in a config without customers', () => {
+    const config = exampleConfig();
+    config.cases[0].requester.customerId = 'PH-1';
+    assert.match(validateConfig(config).join('\n'), /links to "PH-1", but the config has no customers/);
+  });
+
+  it('rejects an earlier case that reuses a queue case id, which would make merges ambiguous', () => {
+    const config = exampleConfig('claims-intake');
+    config.customers.accounts[0].history[0].id = config.cases[1].id;
+    assert.match(validateConfig(config).join('\n'), /is a case in the queue; an earlier case needs its own id/);
+  });
+
+  it('rejects duplicate account ids and duplicate earlier case ids across accounts', () => {
+    const config = exampleConfig('claims-intake');
+    const [first, second] = config.customers.accounts;
+    second.id = first.id;
+    second.history = [{ ...first.history[0] }];
+    const errors = validateConfig(config).join('\n');
+    assert.match(errors, /customers\.accounts has the id "PH-40211" more than once/);
+    assert.match(errors, /customers history has the id "FN-5102" more than once/);
+  });
+
+  it('rejects an earlier case without an outcome', () => {
+    const config = exampleConfig('claims-intake');
+    delete config.customers.accounts[0].history[0].outcome;
+    assert.match(validateConfig(config).join('\n'), /customers\.accounts\[0\]\.history\[0\]\.outcome must be a non-empty string/);
+  });
 });
 
 describe('publicConfig', () => {
@@ -73,6 +106,30 @@ describe('publicConfig', () => {
     config.cases[0].requester.contact = marker;
 
     assert.ok(!JSON.stringify(publicConfig(config)).includes(marker));
+  });
+
+  it('keeps customer records and their links, and drops undocumented keys inside them', () => {
+    const marker = 'LEAK-MARKER';
+    const config = exampleConfig('claims-intake');
+    config.customers.riskScore = marker;
+    config.customers.accounts[0].internalNote = marker;
+    config.customers.accounts[0].facts[0].hidden = marker;
+    config.customers.accounts[0].history[0].fraudFlag = marker;
+
+    const shown = publicConfig(config);
+    assert.ok(!JSON.stringify(shown).includes(marker));
+    assert.equal(shown.customers.label, 'Policyholder');
+    assert.deepEqual(shown.customers.accounts[0].history[0], {
+      id: 'FN-5102',
+      when: '3 years ago',
+      subject: 'Windscreen chip repaired',
+      outcome: 'Paid',
+    });
+    assert.equal(shown.cases[0].requester.customerId, 'PH-40211');
+  });
+
+  it('leaves customers out for a config without them', () => {
+    assert.equal('customers' in publicConfig(exampleConfig()), false);
   });
 });
 

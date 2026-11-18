@@ -17,8 +17,8 @@ an eligibility desk or a fraud alert queue.
 - **Kind:** builder; the triaged queue is the artifact. No AI in the app.
 - **Grading:** a judged state report. `npm run report` prints every decision and reply in a fixed
   order; the platform's grader judges it against criteria the app never sees.
-- **Varies per task:** the desk, field labels and options, the guide, the cases
-  ([authoring guide](docs/authoring.md)).
+- **Varies per task:** the desk, field labels and options, the guide, the cases, and optional
+  customer records with account facts and earlier cases ([authoring guide](docs/authoring.md)).
 - **Runtime:** Node.js only; the server has no runtime dependencies and the client ships prebuilt.
 
 ## Run it locally

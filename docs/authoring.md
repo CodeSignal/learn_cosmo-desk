@@ -1,6 +1,7 @@
 # Authoring a Cosmo Desk task
 
-A task is one `config.json`: a desk, the four decision fields, a routing guide and the cases.
+A task is one `config.json`: a desk, the four decision fields, a routing guide, the cases and,
+optionally, customer records.
 [`config.example.jsonc`](../config.example.jsonc) annotates every key, and
 [`examples/`](../examples) holds two complete tasks. Validate before shipping:
 
@@ -23,6 +24,14 @@ npm run validate -- path/to/config.json
   guide must say when to reply (for example "every Security case and every request for new
   software; no reply otherwise") and what a reply must include, ask for and never promise. Mark
   those sections `"replyRules": true`; the report hands them to the grader.
+- **Customer records are optional.** Add `customers` when the desk's real tool shows account
+  history (support, billing, claims, fraud, eligibility); an internal IT desk can do without. A
+  record holds account facts and earlier, closed cases, collapsed under the case until the
+  candidate opens it. Once a task has records, at least two guide rules should read them (a
+  priority floor for a flagged account, a referral after repeated claims) and at least one trap
+  should hinge on them, such as a calm message from an account the guide treats differently, or a
+  near miss that falls just outside a history rule. Record facts count as stated facts: a case's
+  answer may depend on its record, never on anything unwritten.
 - **No real companies, products or people.** Use invented organisations and names.
 - **No calendar dates.** Use weekdays and times relative to `desk.now`.
 
@@ -42,7 +51,8 @@ the session's `run_solution.sh`) prints the Cosmo Desk Session Report from those
 - one table row per case in queue order: duplicate target, the four decisions by label, the
   escalation reason and whether a reply was written (`—` means not set; a merged case keeps no
   routing);
-- each case the candidate replied to, with its original message and the reply, fenced verbatim;
+- each case the candidate replied to, with the requester's account record when it has one, its
+  original message and the reply, fenced verbatim;
 - the guide sections marked `replyRules`.
 
 Write rubric criteria against these facts, for example "priority matches the key in all 15

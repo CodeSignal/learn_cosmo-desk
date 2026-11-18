@@ -6,6 +6,8 @@ export const NOT_ESCALATED = 'none';
 
 export const DEFAULT_NONE_LABEL = 'Not escalated';
 
+export const DEFAULT_CUSTOMER_LABEL = 'Customer';
+
 const ID_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]*$/;
 const BLOCK_TYPES = ['paragraph', 'list', 'table'];
 
@@ -125,7 +127,7 @@ function checkGuide(errors, guide) {
   checkUniqueIds(errors, 'guide.sections', guide.sections);
 }
 
-function checkCase(errors, path, item) {
+function checkCase(errors, path, item, accountIds) {
   if (!isRecord(item)) {
     errors.push(`${path} must be an object`);
     return;
@@ -136,8 +138,79 @@ function checkCase(errors, path, item) {
   } else {
     checkText(errors, `${path}.requester.name`, item.requester.name);
     checkText(errors, `${path}.requester.detail`, item.requester.detail, { required: false });
+    checkCustomerLink(errors, `${path}.requester.customerId`, item.requester.customerId, accountIds);
   }
   for (const key of ['channel', 'received', 'subject', 'body']) checkText(errors, `${path}.${key}`, item[key]);
+}
+
+function checkCustomerLink(errors, path, customerId, accountIds) {
+  if (customerId === undefined) return;
+  checkId(errors, path, customerId);
+  if (accountIds === null) {
+    errors.push(`${path} links to "${customerId}", but the config has no customers`);
+  } else if (!accountIds.has(customerId)) {
+    errors.push(`${path} "${customerId}" is not an id in customers.accounts`);
+  }
+}
+
+function optionalList(errors, path, value) {
+  if (value === undefined) return [];
+  if (!Array.isArray(value)) {
+    errors.push(`${path} must be a list`);
+    return [];
+  }
+  return value;
+}
+
+function checkAccount(errors, path, account, caseIds) {
+  if (!isRecord(account)) {
+    errors.push(`${path} must be an object`);
+    return;
+  }
+  checkId(errors, `${path}.id`, account.id);
+  checkText(errors, `${path}.name`, account.name);
+  checkText(errors, `${path}.detail`, account.detail, { required: false });
+  optionalList(errors, `${path}.facts`, account.facts).forEach((fact, index) => {
+    const factPath = `${path}.facts[${index}]`;
+    if (!isRecord(fact)) {
+      errors.push(`${factPath} must be an object`);
+      return;
+    }
+    checkText(errors, `${factPath}.label`, fact.label);
+    checkText(errors, `${factPath}.value`, fact.value);
+  });
+  optionalList(errors, `${path}.history`, account.history).forEach((entry, index) => {
+    const entryPath = `${path}.history[${index}]`;
+    if (!isRecord(entry)) {
+      errors.push(`${entryPath} must be an object`);
+      return;
+    }
+    checkId(errors, `${entryPath}.id`, entry.id);
+    if (caseIds.has(entry.id)) {
+      errors.push(`${entryPath}.id "${entry.id}" is a case in the queue; an earlier case needs its own id`);
+    }
+    for (const key of ['when', 'subject', 'outcome']) checkText(errors, `${entryPath}.${key}`, entry[key]);
+  });
+}
+
+/** Returns the account ids, or null when the config has no customers. */
+function checkCustomers(errors, customers, caseIds) {
+  if (customers === undefined) return null;
+  if (!isRecord(customers)) {
+    errors.push('customers must be an object');
+    return new Set();
+  }
+  checkText(errors, 'customers.label', customers.label, { required: false });
+  if (!checkList(errors, 'customers.accounts', customers.accounts, 'account')) return new Set();
+  customers.accounts.forEach((account, index) =>
+    checkAccount(errors, `customers.accounts[${index}]`, account, caseIds)
+  );
+  checkUniqueIds(errors, 'customers.accounts', customers.accounts);
+  const history = customers.accounts
+    .filter(isRecord)
+    .flatMap((account) => (Array.isArray(account.history) ? account.history : []));
+  checkUniqueIds(errors, 'customers history', history);
+  return new Set(customers.accounts.filter(isRecord).map((account) => account.id));
 }
 
 /** Checks structure only; how many cases, options or sections a task has is the author's choice. */
@@ -162,8 +235,11 @@ export function validateConfig(config) {
 
   checkGuide(errors, config.guide);
 
+  const caseIds = new Set(Array.isArray(config.cases) ? config.cases.filter(isRecord).map((item) => item.id) : []);
+  const accountIds = checkCustomers(errors, config.customers, caseIds);
+
   if (checkList(errors, 'cases', config.cases, 'case')) {
-    config.cases.forEach((item, index) => checkCase(errors, `cases[${index}]`, item));
+    config.cases.forEach((item, index) => checkCase(errors, `cases[${index}]`, item, accountIds));
     checkUniqueIds(errors, 'cases', config.cases);
   }
   return errors;
@@ -173,12 +249,37 @@ export function noneLabel(fields) {
   return fields.escalation.noneLabel ?? DEFAULT_NONE_LABEL;
 }
 
+export function customerLabel(config) {
+  return config.customers?.label ?? DEFAULT_CUSTOMER_LABEL;
+}
+
+export function accountFor(config, item) {
+  const id = item.requester.customerId;
+  if (id === undefined) return null;
+  return config.customers?.accounts.find((account) => account.id === id) ?? null;
+}
+
 export function optionLabel(fields, key, id) {
   return fields[key].options.find((option) => option.id === id)?.label ?? null;
 }
 
 function pickOption(option) {
   return { id: option.id, label: option.label };
+}
+
+function pickAccount(account) {
+  return {
+    id: account.id,
+    name: account.name,
+    ...(account.detail ? { detail: account.detail } : {}),
+    facts: (account.facts ?? []).map((fact) => ({ label: fact.label, value: fact.value })),
+    history: (account.history ?? []).map((entry) => ({
+      id: entry.id,
+      when: entry.when,
+      subject: entry.subject,
+      outcome: entry.outcome,
+    })),
+  };
 }
 
 function pickBlock(block) {
@@ -215,11 +316,15 @@ export function publicConfig(config) {
         blocks: section.blocks.map(pickBlock),
       })),
     },
+    ...(config.customers
+      ? { customers: { label: customerLabel(config), accounts: config.customers.accounts.map(pickAccount) } }
+      : {}),
     cases: config.cases.map((item) => ({
       id: item.id,
       requester: {
         name: item.requester.name,
         ...(item.requester.detail ? { detail: item.requester.detail } : {}),
+        ...(item.requester.customerId ? { customerId: item.requester.customerId } : {}),
       },
       channel: item.channel,
       received: item.received,
